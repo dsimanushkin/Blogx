@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentLauncherBinding
+import timber.log.Timber
 
-class LauncherFragment : Fragment() {
+class LauncherFragment : BaseAuthFragment() {
 
     private var _binding: FragmentLauncherBinding? = null
     private val binding get() = _binding!!
@@ -34,6 +35,8 @@ class LauncherFragment : Fragment() {
         binding.forgotPassword.setOnClickListener {
             navForgotPassword()
         }
+
+        Timber.d("LauncherFragment: ${viewModel.hashCode()}")
     }
 
     private fun navLogin() {

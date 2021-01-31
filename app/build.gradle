@@ -107,8 +107,8 @@ dependencies {
     implementation "androidx.navigation:navigation-runtime-ktx:$nav_version"
 
     // -- Material Dialogs
-    def matieral_dialogs_version = "3.1.0"
-    implementation "com.afollestad.material-dialogs:core:$matieral_dialogs_version"
+    def material_dialogs_version = "3.1.0"
+    implementation "com.afollestad.material-dialogs:core:$material_dialogs_version"
 
     // -- Leak Canary
     def leak_canary_version = "2.0-alpha-3"

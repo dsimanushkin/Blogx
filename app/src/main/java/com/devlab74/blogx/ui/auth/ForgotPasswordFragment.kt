@@ -6,8 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.devlab74.blogx.databinding.FragmentForgotPasswordBinding
+import timber.log.Timber
 
-class ForgotPasswordFragment : Fragment() {
+class ForgotPasswordFragment : BaseAuthFragment() {
 
     private var _binding: FragmentForgotPasswordBinding? = null
     private val binding get() = _binding!!
@@ -18,6 +19,12 @@ class ForgotPasswordFragment : Fragment() {
     ): View? {
         _binding = FragmentForgotPasswordBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        Timber.d("ForgotPasswordFragment: ${viewModel.hashCode()}")
     }
 
     override fun onDestroy() {

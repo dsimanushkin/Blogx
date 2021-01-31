@@ -3,8 +3,9 @@ package com.devlab74.blogx.ui.auth
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.devlab74.blogx.databinding.ActivityAuthBinding
+import com.devlab74.blogx.ui.BaseActivity
 
-class AuthActivity : AppCompatActivity() {
+class AuthActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAuthBinding
 
