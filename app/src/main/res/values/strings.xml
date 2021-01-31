@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">Blogx</string>
+
+    <string name="app_logo_description">App Logo</string>
+
+    <string name="password_reset_info">We have emailed you instructions for setting your password. If an account exists with the email you entered.</string>
+    <string name="password_reset_email_sent">Password reset email sent</string>
+    <string name="return_to_launcher_fragment">Return</string>
+
+    <string name="login_launcher_fragment">Login</string>
+    <string name="register_launcher_fragment">Register</string>
+    <string name="forgot_password_launcher_fragment">Forgot password</string>
+    <string name="login_login_fragment_text">Login</string>
+
+    <string name="email_field">Email</string>
+    <string name="field_password">Password</string>
+    <string name="field_login">Login</string>
+    <string name="field_username">Username</string>
+    <string name="field_confirm_password">Confirm password</string>
+    <string name="field_register">Register</string>
+
+    <string name="register">Register</string>
 </resources>

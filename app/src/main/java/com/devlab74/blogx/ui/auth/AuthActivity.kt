@@ -1,4 +1,4 @@
-package com.devlab74.blogx
+package com.devlab74.blogx.ui.auth
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
