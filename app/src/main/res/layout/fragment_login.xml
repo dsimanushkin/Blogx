@@ -19,14 +19,14 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/input_email_layout"
+            app:layout_constraintBottom_toTopOf="@+id/input_username_layout"
             android:textSize="25sp"
             android:textColor="#000"
             android:text="@string/login_login_fragment_text"
             android:layout_marginTop="50dp" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_email_layout"
+            android:id="@+id/input_username_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/login_text"
@@ -37,11 +37,11 @@
             android:layout_marginTop="30dp">
 
             <EditText
-                android:id="@+id/input_email"
+                android:id="@+id/input_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#000"
-                android:hint="@string/email_field"
+                android:hint="@string/field_username"
                 android:inputType="textEmailAddress" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -50,7 +50,7 @@
             android:id="@+id/input_password_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/input_email_layout"
+            app:layout_constraintTop_toBottomOf="@+id/input_username_layout"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/login_button"

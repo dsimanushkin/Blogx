@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.devlab74.blogx.databinding.FragmentRegisterBinding
+import com.devlab74.blogx.ui.auth.state.RegistrationFields
 import com.devlab74.blogx.util.ApiEmptyResponse
 import com.devlab74.blogx.util.ApiErrorResponse
 import com.devlab74.blogx.util.ApiSuccessResponse
@@ -28,16 +29,23 @@ class RegisterFragment : BaseAuthFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.testRegister().observe(viewLifecycleOwner, Observer { response ->
-            when(response) {
-                is ApiSuccessResponse -> {
-                    Timber.d("REGISTRATION RESPONSE: ${response.body}")
+        subscribeObservers()
+    }
+
+    private fun subscribeObservers() {
+        viewModel.viewState.observe(viewLifecycleOwner, Observer {
+            it.registrationFields?.let { registrationFields ->
+                registrationFields.registrationEmail?.let {
+                    binding.inputEmail.setText(it)
                 }
-                is ApiErrorResponse -> {
-                    Timber.d("REGISTRATION RESPONSE: ${response.errorMessage}")
+                registrationFields.registrationUsername?.let {
+                    binding.inputUsername.setText(it)
                 }
-                is ApiEmptyResponse -> {
-                    Timber.d("REGISTRATION RESPONSE: Empty Response")
+                registrationFields.registrationPassword?.let {
+                    binding.inputPassword.setText(it)
+                }
+                registrationFields.registrationConfirmPassword?.let {
+                    binding.inputPasswordConfirm.setText(it)
                 }
             }
         })
@@ -45,6 +53,14 @@ class RegisterFragment : BaseAuthFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        viewModel.setRegistrationFields(
+            RegistrationFields(
+                binding.inputEmail.text.toString(),
+                binding.inputUsername.text.toString(),
+                binding.inputPassword.text.toString(),
+                binding.inputPasswordConfirm.text.toString()
+            )
+        )
         _binding = null
     }
 }

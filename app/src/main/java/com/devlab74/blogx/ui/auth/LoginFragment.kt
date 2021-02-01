@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.devlab74.blogx.databinding.FragmentLoginBinding
+import com.devlab74.blogx.ui.auth.state.LoginFields
 import com.devlab74.blogx.util.ApiEmptyResponse
 import com.devlab74.blogx.util.ApiErrorResponse
 import com.devlab74.blogx.util.ApiSuccessResponse
@@ -28,16 +29,17 @@ class LoginFragment : BaseAuthFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.testLogin().observe(viewLifecycleOwner, Observer { response ->
-            when(response) {
-                is ApiSuccessResponse -> {
-                    Timber.d("LOGIN RESPONSE SUCCESS: ${response.body}")
+        subscribeObservers()
+    }
+
+    private fun subscribeObservers() {
+        viewModel.viewState.observe(viewLifecycleOwner, Observer {
+            it.loginFields?.let { loginFields ->
+                loginFields.loginUsername?.let {
+                    binding.inputUsername.setText(it)
                 }
-                is ApiErrorResponse -> {
-                    Timber.d("LOGIN RESPONSE ERROR: ${response.errorMessage}")
-                }
-                is ApiEmptyResponse -> {
-                    Timber.d("LOGIN RESPONSE EMPTY: Empty Response")
+                loginFields.loginPassword?.let {
+                    binding.inputPassword.setText(it)
                 }
             }
         })
@@ -45,6 +47,12 @@ class LoginFragment : BaseAuthFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        viewModel.setLoginFields(
+            LoginFields(
+                binding.inputUsername.text.toString(),
+                binding.inputPassword.text.toString()
+            )
+        )
         _binding = null
     }
 }

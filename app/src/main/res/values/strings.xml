@@ -20,4 +20,11 @@
     <string name="field_register">Register</string>
 
     <string name="register">Register</string>
+
+    <string name="registration_error_must_fill_all_fields">All fields are required.</string>
+    <string name="registration_error_password_must_match">Password must match</string>
+    <string name="registration_error_none">None</string>
+    <string name="login_error_must_fill_all_fields">You can\'t login without an email and password.</string>
+    <string name="login_error_none">None</string>
+
 </resources>
