@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.devlab74.blogx.databinding.FragmentLoginBinding
+import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.ui.auth.state.LoginFields
 import com.devlab74.blogx.util.ApiEmptyResponse
 import com.devlab74.blogx.util.ApiErrorResponse
@@ -28,6 +29,15 @@ class LoginFragment : BaseAuthFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.loginButton.setOnClickListener {
+            viewModel.setAuthToken(
+                AuthToken(
+                    1,
+                "asfsndfjsdngjkasd"
+                )
+            )
+        }
 
         subscribeObservers()
     }
