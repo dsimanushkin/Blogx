@@ -5,7 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import com.devlab74.blogx.databinding.FragmentLoginBinding
+import com.devlab74.blogx.util.ApiEmptyResponse
+import com.devlab74.blogx.util.ApiErrorResponse
+import com.devlab74.blogx.util.ApiSuccessResponse
 import timber.log.Timber
 
 class LoginFragment : BaseAuthFragment() {
@@ -24,7 +28,19 @@ class LoginFragment : BaseAuthFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Timber.d("LoginFragment: ${viewModel.hashCode()}")
+        viewModel.testLogin().observe(viewLifecycleOwner, Observer { response ->
+            when(response) {
+                is ApiSuccessResponse -> {
+                    Timber.d("LOGIN RESPONSE SUCCESS: ${response.body}")
+                }
+                is ApiErrorResponse -> {
+                    Timber.d("LOGIN RESPONSE ERROR: ${response.errorMessage}")
+                }
+                is ApiEmptyResponse -> {
+                    Timber.d("LOGIN RESPONSE EMPTY: Empty Response")
+                }
+            }
+        })
     }
 
     override fun onDestroy() {

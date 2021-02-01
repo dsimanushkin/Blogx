@@ -10,8 +10,15 @@ import com.devlab74.blogx.persistence.AccountPropertiesDao
 import com.devlab74.blogx.persistence.AppDatabase
 import com.devlab74.blogx.persistence.AppDatabase.Companion.DATABASE_NAME
 import com.devlab74.blogx.persistence.AuthTokenDao
+import com.devlab74.blogx.util.Constants.Companion.BASE_URL
+import com.devlab74.blogx.util.LiveDataCallAdapterFactory
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import dagger.Module
 import dagger.Provides
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.*
 import javax.inject.Singleton
 
 @Module
@@ -51,6 +58,15 @@ class AppModule {
     fun provideGlideInstance(application: Application, requestOptions: RequestOptions): RequestManager {
         return Glide.with(application)
             .setDefaultRequestOptions(requestOptions)
+    }
+
+    @Singleton
+    @Provides
+    fun provideRetrofitBuilder(): Retrofit.Builder {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addCallAdapterFactory(LiveDataCallAdapterFactory())
+            .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
     }
 
 }
