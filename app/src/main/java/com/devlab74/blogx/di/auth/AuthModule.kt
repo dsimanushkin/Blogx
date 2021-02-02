@@ -1,5 +1,6 @@
 package com.devlab74.blogx.di.auth
 
+import android.app.Application
 import com.devlab74.blogx.api.auth.BlogxAuthService
 import com.devlab74.blogx.persistence.AccountPropertiesDao
 import com.devlab74.blogx.persistence.AuthTokenDao
@@ -23,12 +24,14 @@ class AuthModule {
     @AuthScope
     @Provides
     fun provideAuthRepository(
+        application: Application,
         sessionManager: SessionManager,
         authTokenDao: AuthTokenDao,
         accountPropertiesDao: AccountPropertiesDao,
         blogxAuthService: BlogxAuthService
     ): AuthRepository {
         return AuthRepository(
+            application,
             authTokenDao,
             accountPropertiesDao,
             blogxAuthService,

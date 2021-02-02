@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import com.devlab74.blogx.databinding.ActivityAuthBinding
 import com.devlab74.blogx.ui.BaseActivity
 import com.devlab74.blogx.ui.ResponseType
@@ -12,7 +14,7 @@ import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
 import timber.log.Timber
 import javax.inject.Inject
 
-class AuthActivity : BaseActivity() {
+class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener {
 
     private lateinit var binding: ActivityAuthBinding
 
@@ -78,5 +80,13 @@ class AuthActivity : BaseActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    override fun onDestinationChanged(
+        controller: NavController,
+        destination: NavDestination,
+        arguments: Bundle?
+    ) {
+        viewModel.cancelActiveJobs()
     }
 }

@@ -27,4 +27,54 @@
     <string name="login_error_must_fill_all_fields">You can\'t login without an email and password.</string>
     <string name="login_error_none">None</string>
 
+
+
+    <!-- API Errors -->
+    <string name="username_field_required">Username field required.</string>
+    <string name="account_with_this_username_already_exists">Account with this username already exists.</string>
+    <string name="username_too_short">Username too short.</string>
+    <string name="username_too_long">Username too long.</string>
+
+    <string name="email_field_required">Email field required.</string>
+    <string name="account_with_this_email_already_exists">Account with this email already exists.</string>
+    <string name="invalid_email_format">Invalid email format.</string>
+
+    <string name="password_field_required">Password field required.</string>
+    <string name="password_is_too_short">Password is too short.</string>
+    <string name="passwords_does_not_match">Passwords does not match.</string>
+
+    <string name="title_of_the_blog_is_required">Title of the blog is required.</string>
+    <string name="title_of_the_blog_is_too_short">Title of the blog is too short.</string>
+    <string name="title_of_the_blog_is_too_long">Title of the blog is too long.</string>
+
+    <string name="body_of_the_blog_is_required">Body of the blog is required.</string>
+    <string name="body_of_the_blog_is_too_short">Body of the blog is too short.</string>
+
+    <string name="image_is_required">Image is required.</string>
+
+    <string name="invalid_token">Invalid token.</string>
+
+    <string name="successfully_registered_new_user">Successfully registered new user.</string>
+    <string name="username_or_password_is_incorrect">Username or password is incorrect.</string>
+    <string name="successfully_authenticated">Successfully authenticated.</string>
+    <string name="account_updated_successfully">Account updated successfully.</string>
+    <string name="current_password_is_incorrect">Current password is incorrect.</string>
+    <string name="password_changed_successfully">Password changed successfully.</string>
+    <string name="record_not_found">Record not found.</string>
+    <string name="account_information_retrieved_successfully">Account information retrieved successfully.</string>
+
+    <string name="can_not_upload_this_image">Can not upload this image.</string>
+    <string name="blog_not_found">Blog not found.</string>
+    <string name="blog_deleted_successfully">Blog deleted successfully.</string>
+    <string name="you_do_not_have_permission_to_delete_this_blog">You do not have permission to delete this blog.</string>
+    <string name="you_do_not_have_permission_to_update_this_blog">You do not have permission to update this blog.</string>
+    <string name="invalid_page">Invalid page.</string>
+    <string name="blog_list_retrieved_successfully">Blog list retrieved successfully.</string>
+    <string name="blog_retrieved_successfully">Blog retrieved successfully.</string>
+    <string name="is_author_of_the_blog_retrieved_successfully">Is author of the blog retrieved successfully.</string>
+    <string name="blog_updated_successfully">Blog updated successfully.</string>
+    <string name="blog_created_successfully">Blog created successfully.</string>
+
+    <string name="unknown_error">Unknown Error</string>
+
 </resources>

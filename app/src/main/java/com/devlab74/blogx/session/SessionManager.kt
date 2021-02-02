@@ -71,7 +71,7 @@ constructor(
         }
     }
 
-    private fun isConnectedToTheInternet(): Boolean {
+    fun isConnectedToTheInternet(): Boolean {
         val connectivityManager = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val nw = connectivityManager.activeNetwork ?: return false
