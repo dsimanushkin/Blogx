@@ -1,10 +1,12 @@
 package com.devlab74.blogx.repository.auth
 
 import android.app.Application
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import com.devlab74.blogx.api.auth.BlogxAuthService
 import com.devlab74.blogx.api.auth.network_responses.LoginResponse
 import com.devlab74.blogx.api.auth.network_responses.RegistrationResponse
+import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.persistence.AccountPropertiesDao
 import com.devlab74.blogx.persistence.AuthTokenDao
@@ -16,9 +18,14 @@ import com.devlab74.blogx.ui.ResponseType
 import com.devlab74.blogx.ui.auth.state.AuthViewState
 import com.devlab74.blogx.ui.auth.state.LoginFields
 import com.devlab74.blogx.ui.auth.state.RegistrationFields
+import com.devlab74.blogx.util.AbsentLiveData
 import com.devlab74.blogx.util.ApiSuccessResponse
+import com.devlab74.blogx.util.ErrorHandling.Companion.ERROR_SAVE_ACCOUNT_PROPERTIES
+import com.devlab74.blogx.util.ErrorHandling.Companion.ERROR_SAVE_AUTH_TOKEN
 import com.devlab74.blogx.util.ErrorHandling.Companion.GENERIC_ERROR
 import com.devlab74.blogx.util.GenericApiResponse
+import com.devlab74.blogx.util.PreferenceKeys
+import com.devlab74.blogx.util.SuccessHandling.Companion.RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE
 import kotlinx.coroutines.Job
 import timber.log.Timber
 import javax.inject.Inject
@@ -30,7 +37,9 @@ constructor(
     val authTokenDao: AuthTokenDao,
     val accountPropertiesDao: AccountPropertiesDao,
     val blogxAuthService: BlogxAuthService,
-    val sessionManager: SessionManager
+    val sessionManager: SessionManager,
+    val sharedPreferences: SharedPreferences,
+    val sharedPrefsEditor: SharedPreferences.Editor
 ){
 
     private var repositoryJob: Job? = null
@@ -43,7 +52,8 @@ constructor(
 
         return object : NetworkBoundResource<LoginResponse, AuthViewState>(
             application,
-            sessionManager.isConnectedToTheInternet()
+            sessionManager.isConnectedToTheInternet(),
+            true
         ) {
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<LoginResponse>) {
                 Timber.d("handleApiSuccessResponse: $response")
@@ -52,6 +62,31 @@ constructor(
                 if (response.body.status == GENERIC_ERROR) {
                     return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = true, shouldUseToast = false, application = application)
                 }
+
+                accountPropertiesDao.insertOrIgnore(
+                    AccountProperties(
+                        id = response.body.id!!,
+                        email = response.body.email!!,
+                        username = ""
+                    )
+                )
+
+                val result = authTokenDao.insert(
+                    AuthToken(
+                        accountId = response.body.id!!,
+                        authToken = response.body.authToken
+                    )
+                )
+
+                if (result < 0) {
+                    return onCompleteJob(
+                        DataState.error(
+                            Response(ERROR_SAVE_AUTH_TOKEN, ResponseType.Dialog())
+                        )
+                    )
+                }
+
+                saveAuthenticatedUserToPrefs(response.body.email!!)
 
                 onCompleteJob(
                     DataState.data(
@@ -70,6 +105,11 @@ constructor(
                 repositoryJob?.cancel()
                 repositoryJob = job
             }
+
+            // Not in use in this case
+            override suspend fun createCacheRequestAndReturn() {
+
+            }
         }.asLiveData()
     }
 
@@ -86,7 +126,8 @@ constructor(
 
         return object: NetworkBoundResource<RegistrationResponse, AuthViewState>(
             application,
-            sessionManager.isConnectedToTheInternet()
+            sessionManager.isConnectedToTheInternet(),
+            true
         ) {
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<RegistrationResponse>) {
                 Timber.d("handleApiSuccessResponse: $response")
@@ -94,6 +135,41 @@ constructor(
                 if (response.body.status == GENERIC_ERROR) {
                     return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = true, shouldUseToast = false, application = application)
                 }
+
+                val result1 = accountPropertiesDao.insertAndReplace(
+                    AccountProperties(
+                        id = response.body.id!!,
+                        email = response.body.email!!,
+                        username = response.body.username!!
+                    )
+                )
+
+                // Will return -1 if failure
+                if (result1 < 0) {
+                    return onCompleteJob(
+                        DataState.error(
+                            Response(ERROR_SAVE_ACCOUNT_PROPERTIES, ResponseType.Dialog())
+                        )
+                    )
+                }
+
+                val result2 = authTokenDao.insert(
+                    AuthToken(
+                        accountId = response.body.id!!,
+                        authToken = response.body.authToken
+                    )
+                )
+
+                // Will return -1 if failure
+                if (result2 < 0) {
+                    return onCompleteJob(
+                        DataState.error(
+                            Response(ERROR_SAVE_AUTH_TOKEN, ResponseType.Dialog())
+                        )
+                    )
+                }
+
+                saveAuthenticatedUserToPrefs(response.body.email!!)
 
                 onCompleteJob(
                     DataState.data(
@@ -113,7 +189,94 @@ constructor(
                 repositoryJob = job
             }
 
+            // Not in use in this case
+            override suspend fun createCacheRequestAndReturn() {
+
+            }
+
         }.asLiveData()
+    }
+
+    fun checkPreviousAuthUser(): LiveData<DataState<AuthViewState>> {
+        val previousAuthUserEmail: String? = sharedPreferences.getString(PreferenceKeys.PREVIOUS_AUTH_USER, null)
+
+        if (previousAuthUserEmail.isNullOrBlank()) {
+            Timber.d("checkPreviousAuthUser: No previously authenticated user found...")
+            return returnNoTokenFound()
+        } else {
+            return object : NetworkBoundResource<Void, AuthViewState>(
+                application,
+                sessionManager.isConnectedToTheInternet(),
+                false
+            ) {
+                override suspend fun createCacheRequestAndReturn() {
+                    accountPropertiesDao.searchByEmail(previousAuthUserEmail).let { accountProperties ->
+                        Timber.d("checkPreviousAuthUser: searching for token: $accountProperties")
+
+                        accountProperties?.let {
+                            if (accountProperties.pk > -1) {
+                                authTokenDao.searchById(accountProperties.id).let { authToken ->
+                                    if (authToken != null) {
+                                        if (authToken.authToken != null) {
+                                            return onCompleteJob(
+                                                DataState.data(
+                                                    data = AuthViewState(
+                                                        authToken = authToken
+                                                    )
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Timber.d("checkPreviousAuthUser: Auth token not found...")
+                        onCompleteJob(
+                            DataState.data(
+                                data = null,
+                                response = Response(
+                                    RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE,
+                                    ResponseType.None()
+                                )
+                            )
+                        )
+                    }
+                }
+
+                // Not in use in this case
+                override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<Void>) {
+
+                }
+
+                // Not in use in this case
+                override fun createCall(): LiveData<GenericApiResponse<Void>> {
+                    return AbsentLiveData.create()
+                }
+
+                override fun setJob(job: Job) {
+                    repositoryJob?.cancel()
+                    repositoryJob = job
+                }
+
+            }.asLiveData()
+        }
+    }
+
+    private fun returnNoTokenFound(): LiveData<DataState<AuthViewState>> {
+        return object : LiveData<DataState<AuthViewState>>() {
+            override fun onActive() {
+                super.onActive()
+                value = DataState.data(
+                    data = null,
+                    response = Response(RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE, ResponseType.None())
+                )
+            }
+        }
+    }
+
+    private fun saveAuthenticatedUserToPrefs(email: String) {
+        sharedPrefsEditor.putString(PreferenceKeys.PREVIOUS_AUTH_USER, email)
+        sharedPrefsEditor.apply()
     }
 
     fun returnErrorResponse(errorMessage: String, responseType: ResponseType): LiveData<DataState<AuthViewState>> {

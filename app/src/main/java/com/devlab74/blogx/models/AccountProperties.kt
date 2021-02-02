@@ -15,22 +15,27 @@ import com.squareup.moshi.Json
 data class AccountProperties(
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "pk")
     var pk: Int,
 
     @Json(name = "id")
     @ColumnInfo(name = "id")
     var id: String,
 
-    @Json(name = "username")
-    @ColumnInfo(name = "username")
-    var username: String,
-
     @Json(name = "email")
     @ColumnInfo(name = "email")
-    var email: String
+    var email: String,
+
+    @Json(name = "username")
+    @ColumnInfo(name = "username")
+    var username: String
 
 ) {
+    constructor(
+        id: String,
+        email: String,
+        username: String
+    ): this(0, id, email, username)
+
     override fun equals(other: Any?): Boolean {
         if (javaClass != other?.javaClass) {
             return false

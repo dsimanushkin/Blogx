@@ -1,6 +1,7 @@
 package com.devlab74.blogx.di.auth
 
 import android.app.Application
+import android.content.SharedPreferences
 import com.devlab74.blogx.api.auth.BlogxAuthService
 import com.devlab74.blogx.persistence.AccountPropertiesDao
 import com.devlab74.blogx.persistence.AuthTokenDao
@@ -28,14 +29,18 @@ class AuthModule {
         sessionManager: SessionManager,
         authTokenDao: AuthTokenDao,
         accountPropertiesDao: AccountPropertiesDao,
-        blogxAuthService: BlogxAuthService
+        blogxAuthService: BlogxAuthService,
+        sharedPreferences: SharedPreferences,
+        editor: SharedPreferences.Editor
     ): AuthRepository {
         return AuthRepository(
             application,
             authTokenDao,
             accountPropertiesDao,
             blogxAuthService,
-            sessionManager
+            sessionManager,
+            sharedPreferences,
+            editor
         )
     }
 }

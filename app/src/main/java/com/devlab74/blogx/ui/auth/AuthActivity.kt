@@ -10,6 +10,7 @@ import androidx.navigation.NavDestination
 import com.devlab74.blogx.databinding.ActivityAuthBinding
 import com.devlab74.blogx.ui.BaseActivity
 import com.devlab74.blogx.ui.ResponseType
+import com.devlab74.blogx.ui.auth.state.AuthStateEvent
 import com.devlab74.blogx.ui.main.MainActivity
 import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
 import timber.log.Timber
@@ -32,6 +33,7 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         viewModel = ViewModelProvider(this, providerFactory).get(AuthViewModel::class.java)
 
         subscribeObservers()
+        checkPrevioudAuthUser()
     }
 
     private fun subscribeObservers() {
@@ -61,6 +63,10 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
                 navMainActivity()
             }
         })
+    }
+
+    fun checkPrevioudAuthUser() {
+        viewModel.setStateEvent(AuthStateEvent.CheckPreviousAuthEvent())
     }
 
     private fun navMainActivity() {

@@ -1,6 +1,8 @@
 package com.devlab74.blogx.di
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -12,6 +14,7 @@ import com.devlab74.blogx.persistence.AppDatabase.Companion.DATABASE_NAME
 import com.devlab74.blogx.persistence.AuthTokenDao
 import com.devlab74.blogx.util.Constants.Companion.BASE_URL
 import com.devlab74.blogx.util.LiveDataCallAdapterFactory
+import com.devlab74.blogx.util.PreferenceKeys
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import dagger.Module
@@ -67,6 +70,18 @@ class AppModule {
             .baseUrl(BASE_URL)
             .addCallAdapterFactory(LiveDataCallAdapterFactory())
             .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(application: Application): SharedPreferences {
+        return application.getSharedPreferences(PreferenceKeys.APP_PREFERENCES, Context.MODE_PRIVATE)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPrefsEditor(sharedPreferences: SharedPreferences): SharedPreferences.Editor {
+        return sharedPreferences.edit()
     }
 
 }
