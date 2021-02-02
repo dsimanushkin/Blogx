@@ -1,12 +1,12 @@
 package com.devlab74.blogx.ui.auth
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.devlab74.blogx.databinding.ActivityAuthBinding
 import com.devlab74.blogx.ui.BaseActivity
+import com.devlab74.blogx.ui.ResponseType
 import com.devlab74.blogx.ui.main.MainActivity
 import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
 import timber.log.Timber
@@ -32,6 +32,34 @@ class AuthActivity : BaseActivity() {
     }
 
     private fun subscribeObservers() {
+        viewModel.dataState.observe(this, Observer { dataState ->
+            dataState.data?.let { data ->
+                data.data?.let { event ->
+                    event.getContentIfNotHandled()?.let {
+                        it.authToken?.let {
+                            Timber.d("AuthActivity: DataState: $it")
+                            viewModel.setAuthToken(it)
+                        }
+                    }
+                }
+                data.response?.let { event ->
+                    event.getContentIfNotHandled()?.let {
+                        when(it.responseType) {
+                            is ResponseType.Dialog -> {
+                                // Inflate error or success dialog
+                            }
+                            is ResponseType.Toast -> {
+                                // Show toast
+                            }
+                            is ResponseType.None -> {
+                                Timber.e("AuthActivity: Response: ${it.message}")
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
         viewModel.viewState.observe(this, Observer {
             it.authToken?.let {
                 sessionManager.login(it)
@@ -40,7 +68,7 @@ class AuthActivity : BaseActivity() {
 
         sessionManager.cachedToken.observe(this, Observer { authToken ->
             Timber.d("AuthActivity: subscribeObservers: AuthToken: $authToken")
-            if (authToken != null && authToken.accountPk != -1 && authToken.authToken != null) {
+            if (authToken != null && authToken.accountId != "" && authToken.authToken != null) {
                 navMainActivity()
             }
         })

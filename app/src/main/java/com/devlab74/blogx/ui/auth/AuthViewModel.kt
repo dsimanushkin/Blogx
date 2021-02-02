@@ -24,10 +24,18 @@ constructor(
     override fun handleStateEvent(stateEvent: AuthStateEvent): LiveData<DataState<AuthViewState>> {
         when(stateEvent) {
             is AuthStateEvent.LoginAttemptEvent -> {
-                return AbsentLiveData.create()
+                return authRepository.attemptLogin(
+                    stateEvent.username,
+                    stateEvent.password
+                )
             }
             is AuthStateEvent.RegisterAttemptEvent -> {
-                return AbsentLiveData.create()
+                return authRepository.attemptRegistration(
+                    stateEvent.email,
+                    stateEvent.username,
+                    stateEvent.password,
+                    stateEvent.confirmPassword
+                )
             }
             is AuthStateEvent.CheckPreviousAuthEvent -> {
                 return AbsentLiveData.create()

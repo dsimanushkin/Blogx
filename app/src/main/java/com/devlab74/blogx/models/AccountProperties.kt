@@ -2,10 +2,16 @@ package com.devlab74.blogx.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 
-@Entity(tableName = "account_properties")
+@Entity(
+    tableName = "account_properties",
+    indices = [
+        Index(value = ["id"], unique = true)
+    ]
+)
 data class AccountProperties(
 
     @PrimaryKey(autoGenerate = true)

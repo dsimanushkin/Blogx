@@ -26,7 +26,7 @@ class MainActivity: BaseActivity() {
     private fun subscribeObservers() {
         sessionManager.cachedToken.observe(this, Observer { authToken ->
             Timber.d("MainActivity: subscribeObservers: AuthToken: $authToken")
-            if (authToken == null || authToken.accountPk == -1 || authToken.authToken == null) {
+            if (authToken == null || authToken.accountId == "" || authToken.authToken == null) {
                 navAuthActivity()
             }
         })

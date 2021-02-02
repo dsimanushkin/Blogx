@@ -12,16 +12,16 @@ import com.squareup.moshi.Json
     foreignKeys = [
         ForeignKey(
             entity = AccountProperties::class,
-            parentColumns = ["pk"],
-            childColumns = ["account_pk"],
+            parentColumns = ["id"],
+            childColumns = ["account_id"],
             onDelete = CASCADE
         )
     ]
 )
 data class AuthToken(
     @PrimaryKey
-    @ColumnInfo(name = "account_pk")
-    var accountPk: Int? = -1,
+    @ColumnInfo(name = "account_id")
+    var accountId: String = "",
 
     @Json(name = "auth_token")
     @ColumnInfo(name = "auth_token")

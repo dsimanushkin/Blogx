@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.devlab74.blogx.databinding.FragmentRegisterBinding
+import com.devlab74.blogx.ui.auth.state.AuthStateEvent
 import com.devlab74.blogx.ui.auth.state.RegistrationFields
 import com.devlab74.blogx.util.ApiEmptyResponse
 import com.devlab74.blogx.util.ApiErrorResponse
@@ -29,7 +30,22 @@ class RegisterFragment : BaseAuthFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.registerButton.setOnClickListener {
+            register()
+        }
+
         subscribeObservers()
+    }
+
+    private fun register() {
+        viewModel.setStateEvent(
+            AuthStateEvent.RegisterAttemptEvent(
+                binding.inputEmail.text.toString(),
+                binding.inputUsername.text.toString(),
+                binding.inputPassword.text.toString(),
+                binding.inputPasswordConfirm.text.toString()
+            )
+        )
     }
 
     private fun subscribeObservers() {

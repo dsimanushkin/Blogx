@@ -42,7 +42,7 @@ constructor(
             var errorMessage: String? = null
             try {
                 // Removing token from local DB
-                cachedToken.value!!.accountPk?.let {
+                cachedToken.value!!.accountId?.let {
                     authTokenDao.nullifyToken(it)
                 }?: throw CancellationException("Token Error. Logging out user.")
             } catch (e: CancellationException) {
