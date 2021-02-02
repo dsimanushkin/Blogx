@@ -31,6 +31,24 @@
     <string name="text_error">Error</string>
     <string name="text_ok">OK</string>
 
+    <string name="delete">Delete</string>
+
+    <string name="create_blog_fragment_hint_write_some_content">Write some content&#8230;</string>
+    <string name="create_blog_fragment_touch_to_change_image">Touch to change image</string>
+    <string name="create_blog_fragment_hint_write_a_blog_title">Write a blog title&#8230;</string>
+
+    <string name="account_fragment_helper_email">Email</string>
+    <string name="account_fragment_helper_username">Username</string>
+    <string name="your_email">Your email</string>
+    <string name="your_username">Your username</string>
+    <string name="change_password">Change password</string>
+    <string name="button_logout">Logout</string>
+
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_new_password">Confirm new password</string>
+    <string name="update_password">Update password</string>
+
 
 
     <!-- API Errors -->
