@@ -2,6 +2,7 @@ package com.devlab74.blogx.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -35,27 +36,13 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
 
     private fun subscribeObservers() {
         viewModel.dataState.observe(this, Observer { dataState ->
+            onDataStateChange(dataState)
             dataState.data?.let { data ->
                 data.data?.let { event ->
                     event.getContentIfNotHandled()?.let {
                         it.authToken?.let {
                             Timber.d("AuthActivity: DataState: $it")
                             viewModel.setAuthToken(it)
-                        }
-                    }
-                }
-                data.response?.let { event ->
-                    event.getContentIfNotHandled()?.let {
-                        when(it.responseType) {
-                            is ResponseType.Dialog -> {
-                                // Inflate error or success dialog
-                            }
-                            is ResponseType.Toast -> {
-                                // Show toast
-                            }
-                            is ResponseType.None -> {
-                                Timber.e("AuthActivity: Response: ${it.message}")
-                            }
                         }
                     }
                 }
@@ -88,5 +75,13 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         arguments: Bundle?
     ) {
         viewModel.cancelActiveJobs()
+    }
+
+    override fun displayProgressBar(bool: Boolean) {
+        if (bool) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.INVISIBLE
+        }
     }
 }

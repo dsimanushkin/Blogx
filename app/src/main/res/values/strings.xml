@@ -27,6 +27,10 @@
     <string name="login_error_must_fill_all_fields">You can\'t login without an email and password.</string>
     <string name="login_error_none">None</string>
 
+    <string name="text_success">Success</string>
+    <string name="text_error">Error</string>
+    <string name="text_ok">OK</string>
+
 
 
     <!-- API Errors -->

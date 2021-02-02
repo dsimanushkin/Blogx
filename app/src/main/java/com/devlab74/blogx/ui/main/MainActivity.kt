@@ -2,6 +2,7 @@ package com.devlab74.blogx.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import com.devlab74.blogx.databinding.ActivityMainBinding
 import com.devlab74.blogx.ui.BaseActivity
@@ -36,5 +37,13 @@ class MainActivity: BaseActivity() {
         val intent = Intent(this, AuthActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    override fun displayProgressBar(bool: Boolean) {
+        if (bool) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.INVISIBLE
+        }
     }
 }
