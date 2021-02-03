@@ -42,10 +42,6 @@ class MainActivity: BaseActivity(),
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.toolBar.setOnClickListener {
-            sessionManager.logout()
-        }
-
         setupActionBar()
         setupBottomNavigationView(savedInstanceState)
 
@@ -84,7 +80,11 @@ class MainActivity: BaseActivity(),
     }
 
     override fun onGraphChange() {
-        // TODO: What needs to happen when graph changes
+        expandAppBar()
+    }
+
+    override fun expandAppBar() {
+        binding.appBar.setExpanded(true)
     }
 
     override fun onReselectNavItem(navController: NavController, fragment: Fragment) = when(fragment) {

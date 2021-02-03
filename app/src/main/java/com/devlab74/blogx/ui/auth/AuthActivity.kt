@@ -75,6 +75,10 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         finish()
     }
 
+    override fun expandAppBar() {
+        // Ignore it
+    }
+
     override fun onDestinationChanged(
         controller: NavController,
         destination: NavDestination,
