@@ -7,7 +7,7 @@ class Constants {
         const val PASSWORD_RESET_URL = "https://simanushkin.tk/password-reset"
 
         const val NETWORK_TIMEOUT = 3000L
-        const val TESTING_NETWORK_DELAY = 0L // fake network delay for testing
+        const val TESTING_NETWORK_DELAY = 4000L // fake network delay for testing
         const val TESTING_CACHE_DELAY = 0L // fake cache delay for testing
     }
 }

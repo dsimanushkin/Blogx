@@ -10,6 +10,7 @@ import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.persistence.AccountPropertiesDao
 import com.devlab74.blogx.persistence.AuthTokenDao
+import com.devlab74.blogx.repository.JobManager
 import com.devlab74.blogx.repository.NetworkBoundResource
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.DataState
@@ -38,9 +39,7 @@ constructor(
     val sessionManager: SessionManager,
     val sharedPreferences: SharedPreferences,
     val sharedPrefsEditor: SharedPreferences.Editor
-){
-
-    private var repositoryJob: Job? = null
+): JobManager("AuthRepository") {
 
     fun attemptLogin(username: String, password: String): LiveData<DataState<AuthViewState>> {
         val loginFieldErrors = LoginFields(username, password).isValidForLogin(application)
@@ -102,8 +101,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("attemptLogin", job)
             }
 
             // Not in use in this case
@@ -197,8 +195,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("attemptRegistration", job)
             }
 
             // Not in use in this case
@@ -278,8 +275,7 @@ constructor(
                 }
 
                 override fun setJob(job: Job) {
-                    repositoryJob?.cancel()
-                    repositoryJob = job
+                    addJob("checkPreviousAuthUser", job)
                 }
 
                 // Not in use in this case
@@ -327,10 +323,5 @@ constructor(
                 )
             }
         }
-    }
-
-    fun cancelActiveJobs() {
-        Timber.d("AuthRepository: Cancelling on-going jobs...")
-        repositoryJob?.cancel()
     }
 }

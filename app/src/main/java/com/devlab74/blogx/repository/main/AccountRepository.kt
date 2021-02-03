@@ -8,6 +8,7 @@ import com.devlab74.blogx.api.main.BlogxMainService
 import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.persistence.AccountPropertiesDao
+import com.devlab74.blogx.repository.JobManager
 import com.devlab74.blogx.repository.NetworkBoundResource
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.DataState
@@ -31,8 +32,7 @@ constructor(
     val blogxMainService: BlogxMainService,
     val accountPropertiesDao: AccountPropertiesDao,
     val sessionManager: SessionManager
-) {
-    private var repositoryJob: Job? = null
+): JobManager("AccountRepository") {
 
     fun getAccountProperties(authToken: AuthToken): LiveData<DataState<AccountViewState>> {
         return object : NetworkBoundResource<AccountProperties, AccountProperties, AccountViewState>(
@@ -65,8 +65,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("getAccountProperties", job)
             }
 
             override fun loadFromCache(): LiveData<AccountViewState> {
@@ -149,8 +148,7 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("saveAccountProperties", job)
             }
 
         }.asLiveData()
@@ -209,15 +207,9 @@ constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("updatePassword", job)
             }
 
         }.asLiveData()
-    }
-
-    fun cancelActiveJobs() {
-        Timber.d("AccountRepository: cancelling on-going jobs...")
-        repositoryJob?.cancel()
     }
 }

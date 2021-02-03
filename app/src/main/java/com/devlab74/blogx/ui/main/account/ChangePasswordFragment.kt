@@ -48,6 +48,7 @@ class ChangePasswordFragment: BaseAccountFragment() {
                 dataState.data?.let { data ->
                     data.response?.let { event ->
                         if (event.peekContent().message == handleErrors(3006, activity?.application!!)) {
+                            stateChangeListener.hideSoftKeyboard()
                             findNavController().popBackStack()
                         }
                     }

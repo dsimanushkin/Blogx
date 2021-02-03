@@ -11,10 +11,13 @@ import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.ActivityMainBinding
 import com.devlab74.blogx.ui.BaseActivity
 import com.devlab74.blogx.ui.auth.AuthActivity
+import com.devlab74.blogx.ui.main.account.BaseAccountFragment
 import com.devlab74.blogx.ui.main.account.ChangePasswordFragment
 import com.devlab74.blogx.ui.main.account.UpdateAccountFragment
+import com.devlab74.blogx.ui.main.blog.BaseBlogFragment
 import com.devlab74.blogx.ui.main.blog.UpdateBlogFragment
 import com.devlab74.blogx.ui.main.blog.ViewBlogFragment
+import com.devlab74.blogx.ui.main.create_blog.BaseCreateBlogFragment
 import com.devlab74.blogx.util.BOTTOM_NAV_BACKSTACK_KEY
 import com.devlab74.blogx.util.BottomNavController
 import com.devlab74.blogx.util.setUpNavigation
@@ -81,10 +84,28 @@ class MainActivity: BaseActivity(),
 
     override fun onGraphChange() {
         expandAppBar()
+        cancelActiveJobs()
     }
 
     override fun expandAppBar() {
         binding.appBar.setExpanded(true)
+    }
+
+    private fun cancelActiveJobs() {
+        val fragments = bottomNavController.fragmentManager
+            .findFragmentById(bottomNavController.containerId)
+            ?.childFragmentManager
+            ?.fragments
+        if (fragments != null) {
+            for (fragment in fragments) {
+                when(fragment) {
+                    is BaseAccountFragment -> fragment.cancelActiveJobs()
+                    is BaseBlogFragment -> fragment.cancelActiveJobs()
+                    is BaseCreateBlogFragment -> fragment.cancelActiveJobs()
+                }
+            }
+        }
+        displayProgressBar(false)
     }
 
     override fun onReselectNavItem(navController: NavController, fragment: Fragment) = when(fragment) {

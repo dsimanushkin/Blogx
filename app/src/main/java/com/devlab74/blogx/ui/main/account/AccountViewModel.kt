@@ -67,6 +67,20 @@ constructor(
         _viewState.value = update
     }
 
+    fun cancelActiveJobs() {
+        handlePendingData()
+        accountRepository.cancelActiveJobs()
+    }
+
+    fun handlePendingData() {
+        setStateEvent(AccountStateEvent.None())
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        cancelActiveJobs()
+    }
+
     fun logout() {
         sessionManager.logout()
     }
