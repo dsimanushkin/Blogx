@@ -24,4 +24,13 @@ interface BlogxMainService {
         @Field("username") username: String
     ): LiveData<GenericApiResponse<GenericResponse>>
 
+    @PUT("account/change-password")
+    @FormUrlEncoded
+    fun updatePassword(
+        @Header("api-access-token") apiAccessToken: String? = Constants.API_ACCESS_TOKEN,
+        @Header("auth-token") authorization: String,
+        @Field("current_password") currentPassword: String,
+        @Field("new_password") newPassword: String,
+        @Field("confirm_new_password") confirmNewPassword: String
+    ): LiveData<GenericApiResponse<GenericResponse>>
 }

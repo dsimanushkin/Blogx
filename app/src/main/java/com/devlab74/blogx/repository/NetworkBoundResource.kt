@@ -10,10 +10,6 @@ import com.devlab74.blogx.util.*
 import com.devlab74.blogx.util.Constants.Companion.NETWORK_TIMEOUT
 import com.devlab74.blogx.util.Constants.Companion.TESTING_CACHE_DELAY
 import com.devlab74.blogx.util.Constants.Companion.TESTING_NETWORK_DELAY
-import com.devlab74.blogx.util.ErrorHandling.Companion.ERROR_CHECK_NETWORK_CONNECTION
-import com.devlab74.blogx.util.ErrorHandling.Companion.ERROR_UNKNOWN
-import com.devlab74.blogx.util.ErrorHandling.Companion.UNABLE_TODO_OPERATION_WO_INTERNET
-import com.devlab74.blogx.util.ErrorHandling.Companion.UNABLE_TO_RESOLVE_HOST
 import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -49,7 +45,7 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
                 doNetworkRequest(application)
             } else {
                 if (shouldCancelIfNoInternet) {
-                    onErrorReturn(errorMessage = UNABLE_TODO_OPERATION_WO_INTERNET, statusCode = 0, shouldUseDialog = true, shouldUseToast = false, application = application)
+                    onErrorReturn(errorMessage = handleErrors(9003, application), statusCode = 0, shouldUseDialog = true, shouldUseToast = false, application = application)
                 } else {
                     doCacheRequest()
                 }
@@ -90,7 +86,7 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
 
             if (!job.isCompleted) {
                 Timber.e("NetworkBoundResource: JOB NETWORK TIMEOUT")
-                job.cancel(CancellationException(UNABLE_TO_RESOLVE_HOST))
+                job.cancel(CancellationException(handleErrors(9002, application)))
             }
         }
     }
@@ -128,10 +124,8 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
         Timber.d("NetworkBoundResource: ErrorMessage: $msg")
         var useDialog = shouldUseDialog
         var responseType: ResponseType = ResponseType.None()
-        if (msg == null) {
-            msg = ERROR_UNKNOWN
-        } else if (ErrorHandling.isNetworkError(msg)) {
-            msg = ERROR_CHECK_NETWORK_CONNECTION
+        if (ErrorHandling.isNetworkError(msg, application)) {
+            msg = handleErrors(9004, application)
             useDialog = false
         }
         if (shouldUseToast) {
@@ -162,7 +156,7 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
                     cause?.let {
                         // Show error dialog
                         onErrorReturn(errorMessage = it.message, statusCode = 0, shouldUseDialog = false, shouldUseToast = true, application = application)
-                    }?: onErrorReturn(errorMessage = ERROR_UNKNOWN, statusCode = 0, shouldUseDialog = false, shouldUseToast = true, application = application)
+                    }?: onErrorReturn(errorMessage = handleErrors(9001, application), statusCode = 0, shouldUseDialog = false, shouldUseToast = true, application = application)
                 } else if (job.isCompleted) {
                     Timber.e("NetworkBoundResource: Job has been completed")
                     // Do nothing should be handled already

@@ -20,9 +20,7 @@ import com.devlab74.blogx.ui.auth.state.LoginFields
 import com.devlab74.blogx.ui.auth.state.RegistrationFields
 import com.devlab74.blogx.util.AbsentLiveData
 import com.devlab74.blogx.util.ApiSuccessResponse
-import com.devlab74.blogx.util.ErrorHandling.Companion.ERROR_SAVE_ACCOUNT_PROPERTIES
-import com.devlab74.blogx.util.ErrorHandling.Companion.ERROR_SAVE_AUTH_TOKEN
-import com.devlab74.blogx.util.ErrorHandling.Companion.GENERIC_ERROR
+import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
 import com.devlab74.blogx.util.GenericApiResponse
 import com.devlab74.blogx.util.PreferenceKeys
 import com.devlab74.blogx.util.SuccessHandling.Companion.RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE
@@ -61,7 +59,7 @@ constructor(
                 Timber.d("handleApiSuccessResponse: $response")
 
                 // Login Errors counts as 200 response from server, need to handle that
-                if (response.body.status == GENERIC_ERROR) {
+                if (response.body.status == handleErrors(9005, application)) {
                     return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = true, shouldUseToast = false, application = application)
                 }
 
@@ -83,7 +81,7 @@ constructor(
                 if (result < 0) {
                     return onCompleteJob(
                         DataState.error(
-                            Response(ERROR_SAVE_AUTH_TOKEN, ResponseType.Dialog())
+                            Response(handleErrors(9006, application), ResponseType.Dialog())
                         )
                     )
                 }
@@ -146,7 +144,7 @@ constructor(
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<RegistrationResponse>) {
                 Timber.d("handleApiSuccessResponse: $response")
 
-                if (response.body.status == GENERIC_ERROR) {
+                if (response.body.status == handleErrors(9005, application)) {
                     return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = true, shouldUseToast = false, application = application)
                 }
 
@@ -162,7 +160,7 @@ constructor(
                 if (result1 < 0) {
                     return onCompleteJob(
                         DataState.error(
-                            Response(ERROR_SAVE_ACCOUNT_PROPERTIES, ResponseType.Dialog())
+                            Response(handleErrors(9007, application), ResponseType.Dialog())
                         )
                     )
                 }
@@ -178,7 +176,7 @@ constructor(
                 if (result2 < 0) {
                     return onCompleteJob(
                         DataState.error(
-                            Response(ERROR_SAVE_AUTH_TOKEN, ResponseType.Dialog())
+                            Response(handleErrors(9006, application), ResponseType.Dialog())
                         )
                     )
                 }

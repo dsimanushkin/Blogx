@@ -112,6 +112,15 @@
     <string name="blog_updated_successfully">Blog updated successfully.</string>
     <string name="blog_created_successfully">Blog created successfully.</string>
 
+    <string name="error_unknown">Unknown Error.</string>
+    <string name="unable_to_resolve_host">Unable to resolve host.</string>
+    <string name="unable_to_do_operation_wo_internet">Can not do that operation without an internet connection.</string>
+    <string name="error_check_network_connection">Check network connection.</string>
+
+    <string name="generic_error">Error</string>
+    <string name="error_save_auth_token">Error saving authentication token.\nTry restarting the app.</string>
+    <string name="error_save_account_properties">Error saving account properties.\nTry restarting the app.</string>
+
     <string name="unknown_error">Unknown Error</string>
 
 </resources>
