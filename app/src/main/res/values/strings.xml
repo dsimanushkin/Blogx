@@ -102,5 +102,6 @@
     <string name="blog_created_successfully">Blog created successfully.</string>
 
     <string name="unknown_error">Unknown Error</string>
+    <string name="menu_title_edit">Edit</string>
 
 </resources>
