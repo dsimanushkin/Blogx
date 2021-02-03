@@ -54,7 +54,8 @@ constructor(
             application,
             sessionManager.isConnectedToTheInternet(),
             true,
-            false
+            false,
+            true
         ) {
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<LoginResponse>) {
                 Timber.d("handleApiSuccessResponse: $response")
@@ -139,7 +140,8 @@ constructor(
             application,
             sessionManager.isConnectedToTheInternet(),
             true,
-            false
+            false,
+            true
         ) {
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<RegistrationResponse>) {
                 Timber.d("handleApiSuccessResponse: $response")
@@ -229,6 +231,7 @@ constructor(
             return object : NetworkBoundResource<Void, Any, AuthViewState>(
                 application,
                 sessionManager.isConnectedToTheInternet(),
+                false,
                 false,
                 false
             ) {

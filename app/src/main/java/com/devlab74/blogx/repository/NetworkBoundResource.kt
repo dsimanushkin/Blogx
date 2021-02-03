@@ -24,7 +24,8 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
     application: Application,
     isNetworkAvailable: Boolean,
     isNetworkRequest: Boolean,
-    shouldLoadFromCache: Boolean
+    shouldLoadFromCache: Boolean,
+    shouldCancelIfNoInternet: Boolean
 ) {
 
     protected val result = MediatorLiveData<DataState<ViewStateType>>()
@@ -45,39 +46,51 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
 
         if (isNetworkRequest) {
             if (isNetworkAvailable) {
-                coroutineScope.launch {
-                    delay(TESTING_NETWORK_DELAY) // Network delay only for testing!
-
-                    withContext(Main) {
-                        // Making network call
-                        val apiResponse = createCall()
-                        result.addSource(apiResponse) {response ->
-                            result.removeSource(apiResponse)
-
-                            coroutineScope.launch {
-                                handleNetworkCall(response, application)
-                            }
-                        }
-                    }
-                }
-                GlobalScope.launch(IO) {
-                    delay(NETWORK_TIMEOUT)
-
-                    if (!job.isCompleted) {
-                        Timber.e("NetworkBoundResource: JOB NETWORK TIMEOUT")
-                        job.cancel(CancellationException(UNABLE_TO_RESOLVE_HOST))
-                    }
-                }
+                doNetworkRequest(application)
             } else {
-                onErrorReturn(errorMessage = UNABLE_TODO_OPERATION_WO_INTERNET, statusCode = 0, shouldUseDialog = true, shouldUseToast = false, application = application)
+                if (shouldCancelIfNoInternet) {
+                    onErrorReturn(errorMessage = UNABLE_TODO_OPERATION_WO_INTERNET, statusCode = 0, shouldUseDialog = true, shouldUseToast = false, application = application)
+                } else {
+                    doCacheRequest()
+                }
             }
         } else {
-            coroutineScope.launch {
-                // Fake delay for testing cache
-                delay(TESTING_CACHE_DELAY)
+            doCacheRequest()
+        }
+    }
 
-                // View data from cache ONLY and return
-                createCacheRequestAndReturn()
+    private fun doCacheRequest() {
+        coroutineScope.launch {
+            // Fake delay for testing cache
+            delay(TESTING_CACHE_DELAY)
+
+            // View data from cache ONLY and return
+            createCacheRequestAndReturn()
+        }
+    }
+
+    private fun doNetworkRequest(application: Application) {
+        coroutineScope.launch {
+            delay(TESTING_NETWORK_DELAY) // Network delay only for testing!
+
+            withContext(Main) {
+                // Making network call
+                val apiResponse = createCall()
+                result.addSource(apiResponse) {response ->
+                    result.removeSource(apiResponse)
+
+                    coroutineScope.launch {
+                        handleNetworkCall(response, application)
+                    }
+                }
+            }
+        }
+        GlobalScope.launch(IO) {
+            delay(NETWORK_TIMEOUT)
+
+            if (!job.isCompleted) {
+                Timber.e("NetworkBoundResource: JOB NETWORK TIMEOUT")
+                job.cancel(CancellationException(UNABLE_TO_RESOLVE_HOST))
             }
         }
     }

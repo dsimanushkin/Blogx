@@ -3,6 +3,7 @@ package com.devlab74.blogx.repository.main
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.switchMap
+import com.devlab74.blogx.api.GenericResponse
 import com.devlab74.blogx.api.main.BlogxMainService
 import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.models.AuthToken
@@ -10,7 +11,10 @@ import com.devlab74.blogx.persistence.AccountPropertiesDao
 import com.devlab74.blogx.repository.NetworkBoundResource
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.DataState
+import com.devlab74.blogx.ui.Response
+import com.devlab74.blogx.ui.ResponseType
 import com.devlab74.blogx.ui.main.account.state.AccountViewState
+import com.devlab74.blogx.util.AbsentLiveData
 import com.devlab74.blogx.util.ApiSuccessResponse
 import com.devlab74.blogx.util.GenericApiResponse
 import kotlinx.coroutines.Dispatchers.Main
@@ -34,7 +38,8 @@ constructor(
             application,
             sessionManager.isConnectedToTheInternet(),
             true,
-            true
+            true,
+            false
         ) {
             override suspend fun createCacheRequestAndReturn() {
                 withContext(Main) {
@@ -83,6 +88,68 @@ constructor(
                         cachedObject.username
                     )
                 }
+            }
+
+        }.asLiveData()
+    }
+
+    fun saveAccountProperties(
+        authToken: AuthToken,
+        accountProperties: AccountProperties
+    ): LiveData<DataState<AccountViewState>> {
+        return object : NetworkBoundResource<GenericResponse, Any, AccountViewState>(
+            application,
+            sessionManager.isConnectedToTheInternet(),
+            true,
+            false,
+            true
+        ) {
+            // Not in use in this case
+            override suspend fun createCacheRequestAndReturn() {
+
+            }
+
+            // Not in use in this case
+            override fun loadFromCache(): LiveData<AccountViewState> {
+                return AbsentLiveData.create()
+            }
+
+            override suspend fun updateLocalDb(cachedObject: Any?) {
+                return accountPropertiesDao.updateAccountProperties(
+                    accountProperties.id,
+                    accountProperties.email,
+                    accountProperties.username
+                )
+            }
+
+            override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<GenericResponse>) {
+                updateLocalDb(null)
+
+                withContext(Main) {
+                    // Finish with success response
+                    onCompleteJob(
+                        DataState.data(
+                            data = null,
+                            response = Response(
+                                response.body.statusMessage,
+                                ResponseType.Toast()
+                            )
+                        )
+                    )
+                }
+            }
+
+            override fun createCall(): LiveData<GenericApiResponse<GenericResponse>> {
+                return blogxMainService.saveAccountProperties(
+                    authorization = authToken.authToken!!,
+                    email = accountProperties.email,
+                    username = accountProperties.username
+                )
+            }
+
+            override fun setJob(job: Job) {
+                repositoryJob?.cancel()
+                repositoryJob = job
             }
 
         }.asLiveData()

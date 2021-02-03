@@ -22,7 +22,7 @@ class MainModule {
 
     @MainScope
     @Provides
-    fun provideMainRepository(
+    fun provideAccountRepository(
         application: Application,
         blogxMainService: BlogxMainService,
         accountPropertiesDao: AccountPropertiesDao,

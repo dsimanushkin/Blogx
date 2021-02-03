@@ -53,6 +53,10 @@
     <string name="confirm_new_password">Confirm new password</string>
     <string name="update_password">Update password</string>
 
+    <string name="menu_title_edit">Edit</string>
+    <string name="menu_title_save">Save</string>
+
+
     <string name="fragment_account">Account</string>
     <string name="fragment_change_password">Change password</string>
     <string name="fragment_update_account">Update account</string>
@@ -109,6 +113,5 @@
     <string name="blog_created_successfully">Blog created successfully.</string>
 
     <string name="unknown_error">Unknown Error</string>
-    <string name="menu_title_edit">Edit</string>
 
 </resources>
