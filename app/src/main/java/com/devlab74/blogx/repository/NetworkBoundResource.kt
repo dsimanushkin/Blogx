@@ -20,10 +20,11 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import timber.log.Timber
 
-abstract class NetworkBoundResource<ResponseObject, ViewStateType>(
+abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
     application: Application,
     isNetworkAvailable: Boolean,
-    isNetworkRequest: Boolean
+    isNetworkRequest: Boolean,
+    shouldLoadFromCache: Boolean
 ) {
 
     protected val result = MediatorLiveData<DataState<ViewStateType>>()
@@ -33,6 +34,14 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType>(
     init {
         setJob(initNewJob(application))
         setValue(DataState.loading(isLoading = true, cachedData = null))
+
+        if (shouldLoadFromCache) {
+            val dbSource = loadFromCache()
+            result.addSource(dbSource) {
+                result.removeSource(dbSource)
+                setValue(DataState.loading(isLoading = true, cachedData = it))
+            }
+        }
 
         if (isNetworkRequest) {
             if (isNetworkAvailable) {
@@ -154,6 +163,9 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType>(
     fun asLiveData() = result as LiveData<DataState<ViewStateType>>
 
     abstract suspend fun createCacheRequestAndReturn()
+
+    abstract fun loadFromCache(): LiveData<ViewStateType>
+    abstract suspend fun updateLocalDb(cachedObject: CacheObject?)
 
     abstract suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<ResponseObject>)
     abstract fun createCall(): LiveData<GenericApiResponse<ResponseObject>>

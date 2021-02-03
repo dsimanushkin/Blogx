@@ -50,10 +50,11 @@ constructor(
             return returnErrorResponse(loginFieldErrors, ResponseType.Dialog())
         }
 
-        return object : NetworkBoundResource<LoginResponse, AuthViewState>(
+        return object : NetworkBoundResource<LoginResponse, Any, AuthViewState>(
             application,
             sessionManager.isConnectedToTheInternet(),
-            true
+            true,
+            false
         ) {
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<LoginResponse>) {
                 Timber.d("handleApiSuccessResponse: $response")
@@ -110,6 +111,16 @@ constructor(
             override suspend fun createCacheRequestAndReturn() {
 
             }
+
+            // Not in use in this case
+            override fun loadFromCache(): LiveData<AuthViewState> {
+                return AbsentLiveData.create()
+            }
+
+            // Not in use in this case
+            override suspend fun updateLocalDb(cachedObject: Any?) {
+
+            }
         }.asLiveData()
     }
 
@@ -124,10 +135,11 @@ constructor(
             return returnErrorResponse(registrationFieldErrors, ResponseType.Dialog())
         }
 
-        return object: NetworkBoundResource<RegistrationResponse, AuthViewState>(
+        return object: NetworkBoundResource<RegistrationResponse, Any, AuthViewState>(
             application,
             sessionManager.isConnectedToTheInternet(),
-            true
+            true,
+            false
         ) {
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<RegistrationResponse>) {
                 Timber.d("handleApiSuccessResponse: $response")
@@ -194,6 +206,16 @@ constructor(
 
             }
 
+            // Not in use in this case
+            override fun loadFromCache(): LiveData<AuthViewState> {
+                return AbsentLiveData.create()
+            }
+
+            // Not in use in this case
+            override suspend fun updateLocalDb(cachedObject: Any?) {
+
+            }
+
         }.asLiveData()
     }
 
@@ -204,9 +226,10 @@ constructor(
             Timber.d("checkPreviousAuthUser: No previously authenticated user found...")
             return returnNoTokenFound()
         } else {
-            return object : NetworkBoundResource<Void, AuthViewState>(
+            return object : NetworkBoundResource<Void, Any, AuthViewState>(
                 application,
                 sessionManager.isConnectedToTheInternet(),
+                false,
                 false
             ) {
                 override suspend fun createCacheRequestAndReturn() {
@@ -214,7 +237,7 @@ constructor(
                         Timber.d("checkPreviousAuthUser: searching for token: $accountProperties")
 
                         accountProperties?.let {
-                            if (accountProperties.pk > -1) {
+                            if (accountProperties.id.isNotEmpty()) {
                                 authTokenDao.searchById(accountProperties.id).let { authToken ->
                                     if (authToken != null) {
                                         if (authToken.authToken != null) {
@@ -256,6 +279,16 @@ constructor(
                 override fun setJob(job: Job) {
                     repositoryJob?.cancel()
                     repositoryJob = job
+                }
+
+                // Not in use in this case
+                override fun loadFromCache(): LiveData<AuthViewState> {
+                    return AbsentLiveData.create()
+                }
+
+                // Not in use in this case
+                override suspend fun updateLocalDb(cachedObject: Any?) {
+
                 }
 
             }.asLiveData()

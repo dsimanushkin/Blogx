@@ -1,5 +1,6 @@
 package com.devlab74.blogx.di.main
 
+import android.app.Application
 import com.devlab74.blogx.api.main.BlogxMainService
 import com.devlab74.blogx.persistence.AccountPropertiesDao
 import com.devlab74.blogx.repository.main.AccountRepository
@@ -22,11 +23,13 @@ class MainModule {
     @MainScope
     @Provides
     fun provideMainRepository(
+        application: Application,
         blogxMainService: BlogxMainService,
         accountPropertiesDao: AccountPropertiesDao,
         sessionManager: SessionManager
     ): AccountRepository {
         return AccountRepository(
+            application,
             blogxMainService,
             accountPropertiesDao,
             sessionManager

@@ -5,17 +5,19 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 @Entity(
     tableName = "account_properties",
     indices = [
         Index(value = ["id"], unique = true)
-    ]
+    ],
+    primaryKeys = ["id"]
 )
 data class AccountProperties(
 
-    @PrimaryKey(autoGenerate = true)
-    var pk: Int,
+
 
     @Json(name = "id")
     @ColumnInfo(name = "id")
@@ -30,11 +32,8 @@ data class AccountProperties(
     var username: String
 
 ) {
-    constructor(
-        id: String,
-        email: String,
-        username: String
-    ): this(0, id, email, username)
+
+
 
     override fun equals(other: Any?): Boolean {
         if (javaClass != other?.javaClass) {

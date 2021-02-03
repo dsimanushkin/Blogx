@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d57a75107dac1a136053134ebea7745f",
+    "identityHash": "3ad1cf83b7f75c322c33d533e74b2dfc",
     "entities": [
       {
         "tableName": "auth_token",
@@ -44,23 +44,11 @@
       },
       {
         "tableName": "account_properties",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pk` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `id` TEXT NOT NULL, `username` TEXT NOT NULL, `email` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `email` TEXT NOT NULL, `username` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
-          {
-            "fieldPath": "pk",
-            "columnName": "pk",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "username",
-            "columnName": "username",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -69,13 +57,19 @@
             "columnName": "email",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "pk"
+            "id"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [
           {
@@ -93,7 +87,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd57a75107dac1a136053134ebea7745f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3ad1cf83b7f75c322c33d533e74b2dfc')"
     ]
   }
 }
