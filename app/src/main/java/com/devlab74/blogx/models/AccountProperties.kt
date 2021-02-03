@@ -17,8 +17,6 @@ import com.squareup.moshi.JsonClass
 )
 data class AccountProperties(
 
-
-
     @Json(name = "id")
     @ColumnInfo(name = "id")
     var id: String,
@@ -32,8 +30,6 @@ data class AccountProperties(
     var username: String
 
 ) {
-
-
 
     override fun equals(other: Any?): Boolean {
         if (javaClass != other?.javaClass) {
