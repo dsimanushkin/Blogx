@@ -12,9 +12,6 @@ class AccountFragment: BaseAccountFragment() {
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
 
-    @Inject
-    lateinit var sessionManager: SessionManager
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,7 +29,7 @@ class AccountFragment: BaseAccountFragment() {
             findNavController().navigate(R.id.action_accountFragment_to_changePasswordFragment)
         }
         binding.logoutButton.setOnClickListener {
-            sessionManager.logout()
+            viewModel.logout()
         }
     }
 

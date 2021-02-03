@@ -13,7 +13,7 @@ import retrofit2.Retrofit
 
 @Module
 class AuthModule {
-    // Temp
+
     @AuthScope
     @Provides
     fun provideAuthApiService(retrofitBuilder: Retrofit.Builder): BlogxAuthService {
