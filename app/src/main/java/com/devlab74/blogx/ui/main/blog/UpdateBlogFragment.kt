@@ -1,16 +1,28 @@
 package com.devlab74.blogx.ui.main.blog
 
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentUpdateBlogBinding
+import com.devlab74.blogx.ui.*
 import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
+import com.devlab74.blogx.ui.main.blog.viewmodels.getUpdatedImageUri
 import com.devlab74.blogx.ui.main.blog.viewmodels.onBlogPostUpdateSuccess
 import com.devlab74.blogx.ui.main.blog.viewmodels.setUpdatedBlogFields
+import com.devlab74.blogx.util.Constants
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
+import okhttp3.MediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import timber.log.Timber
+import java.io.File
 
 class UpdateBlogFragment : BaseBlogFragment() {
     private var _binding: FragmentUpdateBlogBinding? = null
@@ -30,6 +42,12 @@ class UpdateBlogFragment : BaseBlogFragment() {
 
         setHasOptionsMenu(true)
         subscribeObservers()
+
+        binding.imageContainer.setOnClickListener {
+            if (stateChangeListener.isStoragePermissionGranted()) {
+                pickFromGallery()
+            }
+        }
     }
 
     private fun subscribeObservers() {
@@ -58,6 +76,50 @@ class UpdateBlogFragment : BaseBlogFragment() {
         })
     }
 
+    private fun pickFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        val mimeType = arrayOf("image/jpeg", "image/png", "image/jpg")
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeType)
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        startActivityForResult(intent, Constants.GALLERY_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                Constants.GALLERY_REQUEST_CODE -> {
+                    data?.data?.let { uri ->
+                        launchImageCrop(uri)
+                    }?: showErrorDialog(getString(R.string.error_something_wrong_with_image))
+                }
+                CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
+                    Timber.d("CROP: CROP_IMAGE_ACTIVITY_REQUEST_CODE")
+                    val result = CropImage.getActivityResult(data)
+                    val resultUri = result.uri
+                    Timber.d("CROP: CROP_IMAGE_ACTIVITY_REQUEST_CODE: uri: $resultUri")
+                    viewModel.setUpdatedBlogFields(
+                        title = null,
+                        body = null,
+                        uri = resultUri
+                    )
+                }
+                CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE -> {
+                    showErrorDialog(getString(R.string.error_something_wrong_with_image))
+                }
+            }
+        }
+    }
+
+    private fun launchImageCrop(uri: Uri?) {
+        context?.let {
+            CropImage.activity(uri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(it, this)
+        }
+    }
+
     private fun setBlogProperties(
         updatedBlogTitle: String?,
         updatedBlogBody: String?,
@@ -72,11 +134,48 @@ class UpdateBlogFragment : BaseBlogFragment() {
 
     private fun saveChanges() {
         var multipartBody: MultipartBody.Part? = null
-        viewModel.setStateEvent(
-            BlogStateEvent.UpdatedBlogPostEvent(
-                binding.blogTitle.text.toString(),
-                binding.blogBody.text.toString(),
-                multipartBody
+        viewModel.getUpdatedImageUri()?.let { imageUrl ->
+            imageUrl.path?.let { filePath ->
+                val imageFile = File(filePath)
+                Timber.d("UpdateBlogFragment: imageFile: $imageFile")
+                val requestBody = RequestBody.create(
+                    MediaType.parse("image/jpg"),
+                    imageFile
+                )
+                multipartBody = MultipartBody.Part.createFormData(
+                    "image",
+                    imageFile.name,
+                    requestBody
+                )
+            }
+        }
+
+        multipartBody?.let {
+            viewModel.setStateEvent(
+                BlogStateEvent.UpdatedBlogPostEvent(
+                    binding.blogTitle.text.toString(),
+                    binding.blogBody.text.toString(),
+                    it
+                )
+            )
+
+            stateChangeListener.hideSoftKeyboard()
+        }?: showErrorDialog(getString(R.string.error_must_select_image))
+    }
+
+    private fun showErrorDialog(errorMessage: String) {
+        stateChangeListener.onDataStateChange(
+            DataState(
+                Event(
+                    StateError(
+                        Response(
+                            errorMessage,
+                            ResponseType.Dialog()
+                        )
+                    )
+                ),
+                Loading(false),
+                Data(Event.dataEvent(null), null)
             )
         )
     }
