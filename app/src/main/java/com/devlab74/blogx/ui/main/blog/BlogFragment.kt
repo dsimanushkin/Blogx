@@ -13,16 +13,24 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
 import com.bumptech.glide.RequestManager
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentBlogBinding
+import com.devlab74.blogx.databinding.LayoutBlogFilterBinding
 import com.devlab74.blogx.models.BlogPost
+import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_DATE_UPDATED
+import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_USERNAME
+import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_ORDER_ASC
 import com.devlab74.blogx.ui.DataState
 import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
 import com.devlab74.blogx.ui.main.blog.state.BlogViewState
 import com.devlab74.blogx.ui.main.blog.viewmodels.*
 import com.devlab74.blogx.util.ErrorHandling
 import com.devlab74.blogx.util.TopSpacingItemDecoration
+import kotlinx.android.synthetic.main.layout_blog_filter.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -154,6 +162,71 @@ class BlogFragment : BaseBlogFragment(),
         }
     }
 
+    private fun showFilterOptions() {
+        activity?.let {
+            val dialog = MaterialDialog(it)
+                .noAutoDismiss()
+                .customView(R.layout.layout_blog_filter)
+
+            val dialogBinding = LayoutBlogFilterBinding.bind(dialog.getCustomView())
+
+            val filter = viewModel.getFilter()
+            val order = viewModel.getOrder()
+
+            if (filter == BLOG_FILTER_DATE_UPDATED) {
+                dialogBinding.filterGroup.check(dialogBinding.filterDate.id)
+            } else {
+                dialogBinding.filterGroup.check(dialogBinding.filterAuthor.id)
+            }
+
+            if (order == BLOG_ORDER_ASC) {
+                dialogBinding.orderGroup.check(dialogBinding.filterAsc.id)
+            } else {
+                dialogBinding.orderGroup.check(dialogBinding.filterDesc.id)
+            }
+
+            dialogBinding.positiveButton.setOnClickListener {
+                Timber.d("FilterDialog: apply filter")
+
+                val selectedFilter = if (dialogBinding.filterGroup.checkedRadioButtonId == dialogBinding.filterGroup.filter_author.id) {
+                    dialogBinding.filterGroup.filter_author
+                } else {
+                    dialogBinding.filterGroup.filter_date
+                }
+
+                val selectedOrder = if (dialogBinding.orderGroup.checkedRadioButtonId == dialogBinding.orderGroup.filter_asc.id) {
+                    dialogBinding.orderGroup.filter_asc
+                } else {
+                    dialogBinding.orderGroup.filter_desc
+                }
+
+                var filter = BLOG_FILTER_DATE_UPDATED
+                if (selectedFilter.text.toString() == getString(R.string.filter_author)) {
+                    Timber.d("FilterDialog: changing filter. ${selectedFilter.text}")
+                    filter = BLOG_FILTER_USERNAME
+                }
+
+                var order = ""
+                if (selectedOrder.text.toString() == getString(R.string.filter_desc)) {
+                    Timber.d("FilterDialog: changing order. ${selectedOrder.text}")
+                    order = "-"
+                }
+                viewModel.saveFilterOptions(filter, order).let {
+                    viewModel.setBlogFilter(filter)
+                    viewModel.setBlogOrder(order)
+                    onBlogSearchOrFilter()
+                }
+                dialog.dismiss()
+            }
+
+            dialogBinding.negativeButton.setOnClickListener {
+                Timber.d("FilterDialog: cancelling filter")
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
+    }
+
     private fun resetUI() {
         binding.blogPostRecyclerview.smoothScrollToPosition(0)
         stateChangeListener.hideSoftKeyboard()
@@ -168,6 +241,15 @@ class BlogFragment : BaseBlogFragment(),
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_menu, menu)
         initSearchView(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_filter_settings) {
+            showFilterOptions()
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onItemSelected(position: Int, item: BlogPost) {

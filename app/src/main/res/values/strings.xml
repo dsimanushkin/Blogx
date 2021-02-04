@@ -68,6 +68,14 @@
     <string name="fragment_update_blog">Update</string>
     <string name="fragment_create_blog">Create</string>
 
+    <string name="filter_options">Filter options</string>
+    <string name="author_or_date">Filter by author or date</string>
+    <string name="filter_author">Author</string>
+    <string name="filter_date">Date</string>
+    <string name="asc_desc">Ascending or descending order</string>
+    <string name="filter_asc">ASC</string>
+    <string name="filter_desc">DESC</string>
+
 
     <!-- API Errors -->
     <string name="username_field_required">Username field required.</string>
@@ -125,5 +133,7 @@
     <string name="error_save_account_properties">Error saving account properties.\nTry restarting the app.</string>
 
     <string name="unknown_error">Unknown Error</string>
+    <string name="blog_filter_apply_button">Apply</string>
+    <string name="blog_filter_cancel_button">Cancel</string>
 
 </resources>
