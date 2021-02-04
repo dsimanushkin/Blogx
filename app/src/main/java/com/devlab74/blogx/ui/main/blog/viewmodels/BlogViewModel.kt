@@ -2,8 +2,6 @@ package com.devlab74.blogx.ui.main.blog.viewmodels
 
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
-import com.bumptech.glide.RequestManager
-import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogQueryUtils
 import com.devlab74.blogx.repository.main.BlogRepository
 import com.devlab74.blogx.session.SessionManager
@@ -15,6 +13,8 @@ import com.devlab74.blogx.ui.main.blog.state.BlogViewState
 import com.devlab74.blogx.util.AbsentLiveData
 import com.devlab74.blogx.util.PreferenceKeys.Companion.BLOG_FILTER
 import com.devlab74.blogx.util.PreferenceKeys.Companion.BLOG_ORDER
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class BlogViewModel
@@ -71,6 +71,25 @@ constructor(
                     blogRepository.deleteBlogPost(
                         authToken = authToken,
                         blogPost = getBlogPost()
+                    )
+                }?: AbsentLiveData.create()
+            }
+            is BlogStateEvent.UpdatedBlogPostEvent -> {
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    val title = RequestBody.create(
+                        MediaType.parse("text/plain"),
+                        stateEvent.title
+                    )
+                    val body = RequestBody.create(
+                        MediaType.parse("text/plain"),
+                        stateEvent.body
+                    )
+                    blogRepository.updateBlogPost(
+                        authToken = authToken,
+                        blogId = getBlogId(),
+                        title = title,
+                        body = body,
+                        image = stateEvent.image
                     )
                 }?: AbsentLiveData.create()
             }

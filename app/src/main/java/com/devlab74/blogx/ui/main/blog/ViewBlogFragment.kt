@@ -2,6 +2,7 @@ package com.devlab74.blogx.ui.main.blog
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
@@ -11,11 +12,10 @@ import com.devlab74.blogx.ui.AreYouSureCallback
 import com.devlab74.blogx.ui.UIMessage
 import com.devlab74.blogx.ui.UIMessageType
 import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
-import com.devlab74.blogx.ui.main.blog.viewmodels.isAuthorOfBlogPost
-import com.devlab74.blogx.ui.main.blog.viewmodels.removeDeletedBlogPost
-import com.devlab74.blogx.ui.main.blog.viewmodels.setIsAuthorOfBlogPost
+import com.devlab74.blogx.ui.main.blog.viewmodels.*
 import com.devlab74.blogx.util.DateUtils
 import timber.log.Timber
+import java.lang.Exception
 
 class ViewBlogFragment : BaseBlogFragment() {
     private var _binding: FragmentViewBlogBinding? = null
@@ -134,7 +134,17 @@ class ViewBlogFragment : BaseBlogFragment() {
     }
 
     fun navUpdateBlogFragment() {
-        findNavController().navigate(R.id.action_viewBlogFragment_to_updateBlogFragment)
+        try {
+            // Prer for next fragment
+            viewModel.setUpdatedBlogFields(
+                viewModel.getBlogPost().title,
+                viewModel.getBlogPost().body,
+                viewModel.getBlogPost().image.toUri()
+            )
+            findNavController().navigate(R.id.action_viewBlogFragment_to_updateBlogFragment)
+        } catch (e: Exception) {
+            Timber.e("Exception: ${e.message}")
+        }
     }
 
     override fun onDestroyView() {

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.switchMap
 import com.devlab74.blogx.api.GenericResponse
 import com.devlab74.blogx.api.main.BlogxMainService
+import com.devlab74.blogx.api.main.response.BlogCreateUpdateResponse
 import com.devlab74.blogx.api.main.response.BlogIsAuthorResponse
 import com.devlab74.blogx.api.main.response.BlogListSearchResponse
 import com.devlab74.blogx.models.AuthToken
@@ -29,6 +30,8 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
@@ -264,6 +267,89 @@ constructor(
 
             override fun setJob(job: Job) {
                 addJob("deleteBlogPost", job)
+            }
+
+        }.asLiveData()
+    }
+
+    fun updateBlogPost(
+        authToken: AuthToken,
+        blogId: String,
+        title: RequestBody,
+        body: RequestBody,
+        image: MultipartBody.Part?
+    ): LiveData<DataState<BlogViewState>> {
+        return object : NetworkBoundResource<BlogCreateUpdateResponse, BlogPost, BlogViewState>(
+            application,
+            sessionManager.isConnectedToTheInternet(),
+            true,
+            false,
+            true
+        ) {
+            // Not in use in this case
+            override suspend fun createCacheRequestAndReturn() {
+
+            }
+
+            // Not in use in this case
+            override fun loadFromCache(): LiveData<BlogViewState> {
+                return AbsentLiveData.create()
+            }
+
+            override suspend fun updateLocalDb(cachedObject: BlogPost?) {
+                cachedObject?.let { blogPost ->
+                    blogPostDao.updateBlogPost(
+                        blogPost.id,
+                        blogPost.title,
+                        blogPost.body,
+                        blogPost.image
+                    )
+                }
+            }
+
+            override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<BlogCreateUpdateResponse>) {
+                val updatedBlogPost = BlogPost(
+                    response.body.id,
+                    response.body.title,
+                    response.body.body,
+                    response.body.image,
+                    DateUtils.convertServerStringDateToLong(
+                        response.body.dateUpdated
+                    ),
+                    response.body.username
+                )
+
+                updateLocalDb(updatedBlogPost)
+
+                withContext(Main) {
+                    onCompleteJob(
+                        DataState.data(
+                            data = BlogViewState(
+                                viewBlogFields = BlogViewState.ViewBlogFields(
+                                    blogPost = updatedBlogPost
+                                )
+                            ),
+                            response = Response(
+                                handleErrors(response.body.statusCode, application),
+                                ResponseType.Toast()
+                            )
+                        )
+                    )
+                }
+            }
+
+            override fun createCall(): LiveData<GenericApiResponse<BlogCreateUpdateResponse>> {
+                return blogxMainService.updateBlog(
+                    authorization = authToken.authToken!!,
+                    blogId = blogId,
+                    title = title,
+                    body = body,
+                    image = image
+                )
+            }
+
+            override fun setJob(job: Job) {
+                addJob("updateBlogPost", job)
             }
 
         }.asLiveData()

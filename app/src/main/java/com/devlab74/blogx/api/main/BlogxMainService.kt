@@ -2,11 +2,14 @@ package com.devlab74.blogx.api.main
 
 import androidx.lifecycle.LiveData
 import com.devlab74.blogx.api.GenericResponse
+import com.devlab74.blogx.api.main.response.BlogCreateUpdateResponse
 import com.devlab74.blogx.api.main.response.BlogIsAuthorResponse
 import com.devlab74.blogx.api.main.response.BlogListSearchResponse
 import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.util.Constants
 import com.devlab74.blogx.util.GenericApiResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
 
 interface BlogxMainService {
@@ -58,4 +61,15 @@ interface BlogxMainService {
         @Header("auth-token") authorization: String,
         @Path("blogId") blogId: String
     ): LiveData<GenericApiResponse<GenericResponse>>
+
+    @Multipart
+    @PUT("blog/{blogId}/update")
+    fun updateBlog(
+        @Header("api-access-token") apiAccessToken: String? = Constants.API_ACCESS_TOKEN,
+        @Header("auth-token") authorization: String,
+        @Path("blogId") blogId: String,
+        @Part("title") title: RequestBody,
+        @Part("body") body: RequestBody,
+        @Part image: MultipartBody.Part?
+    ): LiveData<GenericApiResponse<BlogCreateUpdateResponse>>
 }

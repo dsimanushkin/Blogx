@@ -1,5 +1,6 @@
 package com.devlab74.blogx.ui.main.blog.viewmodels
 
+import android.net.Uri
 import com.devlab74.blogx.models.BlogPost
 
 fun BlogViewModel.setQuery(query: String) {
@@ -64,4 +65,18 @@ fun BlogViewModel.removeDeletedBlogPost() {
         }
     }
     setBlogListData(list)
+}
+
+fun BlogViewModel.setUpdatedBlogFields(
+    title: String?,
+    body: String?,
+    uri: Uri?
+) {
+    val update = getCurrentViewStateOrNew()
+    val updatedBlogFields = update.updatedBlogFields
+    title?.let { updatedBlogFields.updateBlogTitle = it }
+    body?.let { updatedBlogFields.updateBlogBody = it }
+    uri?.let { updatedBlogFields.updateImageUri = it }
+    update.updatedBlogFields = updatedBlogFields
+    setViewState(update)
 }

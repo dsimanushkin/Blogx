@@ -1,5 +1,6 @@
 package com.devlab74.blogx.ui.main.blog.state
 
+import android.net.Uri
 import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_ORDER_ASC
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.ORDER_BY_ASC_DATE_UPDATED
@@ -9,9 +10,10 @@ data class BlogViewState(
     var blogFields: BlogFields = BlogFields(),
 
     // ViewBlogFragment vars
-    var viewBlogFields: ViewBlogFields = ViewBlogFields()
+    var viewBlogFields: ViewBlogFields = ViewBlogFields(),
 
     // UpdateBlogFragment vars
+    var updatedBlogFields: UpdatedBlogFields = UpdatedBlogFields()
 ) {
 
     data class BlogFields(
@@ -29,4 +31,9 @@ data class BlogViewState(
         var isAuthorOfBlogPost: Boolean = false
     )
 
+    data class UpdatedBlogFields(
+        var updateBlogTitle: String? = null,
+        var updateBlogBody: String? = null,
+        var updateImageUri: Uri? = null
+    )
 }
