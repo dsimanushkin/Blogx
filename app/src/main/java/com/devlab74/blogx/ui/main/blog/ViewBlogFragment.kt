@@ -2,9 +2,12 @@ package com.devlab74.blogx.ui.main.blog
 
 import android.os.Bundle
 import android.view.*
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentViewBlogBinding
+import com.devlab74.blogx.models.BlogPost
+import com.devlab74.blogx.util.DateUtils
 
 class ViewBlogFragment : BaseBlogFragment() {
     private var _binding: FragmentViewBlogBinding? = null
@@ -23,6 +26,29 @@ class ViewBlogFragment : BaseBlogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setHasOptionsMenu(true)
+        subscribeObservers()
+    }
+
+    private fun subscribeObservers() {
+        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+            stateChangeListener.onDataStateChange(dataState)
+        })
+
+        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
+            viewState.viewBlogFields.blogPost?.let { blogPost ->
+                setBlogProperties(blogPost)
+            }
+        })
+    }
+
+    private fun setBlogProperties(blogPost: BlogPost) {
+        requestManager
+            .load(blogPost.image)
+            .into(binding.blogImage)
+        binding.blogTitle.text = blogPost.title
+        binding.blogAuthor.text = blogPost.username
+        binding.blogUpdateDate.text = DateUtils.convertLongToStringDate(blogPost.dateUpdated)
+        binding.blogBody.text = blogPost.body
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

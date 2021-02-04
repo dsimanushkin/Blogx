@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.bumptech.glide.RequestManager
 import com.devlab74.blogx.R
 import com.devlab74.blogx.ui.DataStateChangeListener
 import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
@@ -23,6 +24,9 @@ abstract class BaseBlogFragment: DaggerFragment() {
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
+
+    @Inject
+    lateinit var requestManager: RequestManager
 
     lateinit var viewModel: BlogViewModel
 

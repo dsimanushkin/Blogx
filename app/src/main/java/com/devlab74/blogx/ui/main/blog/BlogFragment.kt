@@ -23,9 +23,6 @@ class BlogFragment : BaseBlogFragment(),
     private var _binding: FragmentBlogBinding? = null
     private val binding get() = _binding!!
 
-    @Inject
-    lateinit var requestManager: RequestManager
-
     private lateinit var recyclerAdapter: BlogListAdapter
 
     override fun onCreateView(
@@ -109,6 +106,8 @@ class BlogFragment : BaseBlogFragment(),
 
     override fun onItemSelected(position: Int, item: BlogPost) {
         Timber.d("onItemSelected: position, BlogPost: $position, $item")
+        viewModel.setBlogPost(item)
+        findNavController().navigate(R.id.action_blogFragment_to_viewBlogFragment)
     }
 
     override fun onDestroyView() {
