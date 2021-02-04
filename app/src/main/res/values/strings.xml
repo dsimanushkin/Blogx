@@ -55,7 +55,8 @@
 
     <string name="menu_title_edit">Edit</string>
     <string name="menu_title_save">Save</string>
-
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
 
     <string name="no_more_results">No more results&#8230;</string>
 
