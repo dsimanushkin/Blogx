@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener {
+abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener, UICommunicationListener {
     @Inject
     lateinit var sessionManager: SessionManager
 
@@ -78,6 +78,26 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
         if (currentFocus != null) {
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        }
+    }
+
+    override fun onUIMessageReceived(uiMessage: UIMessage) {
+        when(uiMessage.uiMessageType) {
+            is UIMessageType.AreYouSureDialog -> {
+                areYouSureDialog(
+                    uiMessage.message,
+                    uiMessage.uiMessageType.callback
+                )
+            }
+            is UIMessageType.Toast -> {
+                displayToast(uiMessage.message)
+            }
+            is UIMessageType.Dialog -> {
+                displayInfoDialog(uiMessage.message)
+            }
+            is UIMessageType.None -> {
+                Timber.d("onUIMessageReceived: ${uiMessage.message}")
+            }
         }
     }
 }

@@ -7,10 +7,15 @@ import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentViewBlogBinding
 import com.devlab74.blogx.models.BlogPost
+import com.devlab74.blogx.ui.AreYouSureCallback
+import com.devlab74.blogx.ui.UIMessage
+import com.devlab74.blogx.ui.UIMessageType
 import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
 import com.devlab74.blogx.ui.main.blog.viewmodels.isAuthorOfBlogPost
+import com.devlab74.blogx.ui.main.blog.viewmodels.removeDeletedBlogPost
 import com.devlab74.blogx.ui.main.blog.viewmodels.setIsAuthorOfBlogPost
 import com.devlab74.blogx.util.DateUtils
+import timber.log.Timber
 
 class ViewBlogFragment : BaseBlogFragment() {
     private var _binding: FragmentViewBlogBinding? = null
@@ -34,7 +39,7 @@ class ViewBlogFragment : BaseBlogFragment() {
         stateChangeListener.expandAppBar()
 
         binding.deleteButton.setOnClickListener {
-            deleteBlogPost()
+            confirmDeleteRequest()
         }
     }
 
@@ -46,6 +51,12 @@ class ViewBlogFragment : BaseBlogFragment() {
                     viewModel.setIsAuthorOfBlogPost(
                         viewState.viewBlogFields.isAuthorOfBlogPost
                     )
+                }
+                data.response?.peekContent()?.let { response ->
+                    if (response.message == getString(R.string.blog_deleted_successfully)) {
+                        viewModel.removeDeletedBlogPost()
+                        findNavController().popBackStack()
+                    }
                 }
             }
         })
@@ -75,6 +86,24 @@ class ViewBlogFragment : BaseBlogFragment() {
     private fun checkIsAuthorOfBlogPost() {
         viewModel.setIsAuthorOfBlogPost(false) // reset
         viewModel.setStateEvent(BlogStateEvent.CheckAuthorOfBlogPost())
+    }
+
+    private fun confirmDeleteRequest() {
+        val callback: AreYouSureCallback = object : AreYouSureCallback {
+            override fun proceed() {
+                deleteBlogPost()
+            }
+
+            override fun cancel() {
+                // Ignore
+            }
+        }
+        uiCommunicationListener.onUIMessageReceived(
+            UIMessage(
+                getString(R.string.are_you_sure_delete),
+                UIMessageType.AreYouSureDialog(callback)
+            )
+        )
     }
 
     private fun setBlogProperties(blogPost: BlogPost) {

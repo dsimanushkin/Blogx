@@ -76,6 +76,12 @@
     <string name="filter_asc">ASC</string>
     <string name="filter_desc">DESC</string>
 
+    <string name="text_info">Info</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="text_yes">yes</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="are_you_sure_delete">Are you sure you want to delete this? This can\'t be undone.</string>
+
 
     <!-- API Errors -->
     <string name="username_field_required">Username field required.</string>
