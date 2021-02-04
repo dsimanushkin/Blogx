@@ -32,6 +32,10 @@ class ViewBlogFragment : BaseBlogFragment() {
         subscribeObservers()
         checkIsAuthorOfBlogPost()
         stateChangeListener.expandAppBar()
+
+        binding.deleteButton.setOnClickListener {
+            deleteBlogPost()
+        }
     }
 
     private fun subscribeObservers() {
@@ -55,6 +59,12 @@ class ViewBlogFragment : BaseBlogFragment() {
                 adaptViewToAuthorMode()
             }
         })
+    }
+
+    private fun deleteBlogPost() {
+        viewModel.setStateEvent(
+            BlogStateEvent.DeleteBlogPostEvent()
+        )
     }
 
     private fun adaptViewToAuthorMode() {

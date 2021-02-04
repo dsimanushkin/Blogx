@@ -3,6 +3,7 @@ package com.devlab74.blogx.repository.main
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.switchMap
+import com.devlab74.blogx.api.GenericResponse
 import com.devlab74.blogx.api.main.BlogxMainService
 import com.devlab74.blogx.api.main.response.BlogIsAuthorResponse
 import com.devlab74.blogx.api.main.response.BlogListSearchResponse
@@ -14,11 +15,14 @@ import com.devlab74.blogx.repository.JobManager
 import com.devlab74.blogx.repository.NetworkBoundResource
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.DataState
+import com.devlab74.blogx.ui.Response
+import com.devlab74.blogx.ui.ResponseType
 import com.devlab74.blogx.ui.main.blog.state.BlogViewState
 import com.devlab74.blogx.util.AbsentLiveData
 import com.devlab74.blogx.util.ApiSuccessResponse
 import com.devlab74.blogx.util.Constants.Companion.PAGINATION_PAGE_SIZE
 import com.devlab74.blogx.util.DateUtils
+import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
 import com.devlab74.blogx.util.GenericApiResponse
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -195,6 +199,71 @@ constructor(
 
             override fun setJob(job: Job) {
                 addJob("isAuthorOfBlogPost", job)
+            }
+
+        }.asLiveData()
+    }
+
+    fun deleteBlogPost(
+        authToken: AuthToken,
+        blogPost: BlogPost
+    ): LiveData<DataState<BlogViewState>> {
+        return object : NetworkBoundResource<GenericResponse, BlogPost, BlogViewState>(
+            application,
+            sessionManager.isConnectedToTheInternet(),
+            true,
+            false,
+            true
+        ) {
+            // Not in use in this case
+            override suspend fun createCacheRequestAndReturn() {
+
+            }
+
+            // Not in use in this case
+            override fun loadFromCache(): LiveData<BlogViewState> {
+                return AbsentLiveData.create()
+            }
+
+            override suspend fun updateLocalDb(cachedObject: BlogPost?) {
+                cachedObject?.let { blogPost ->
+                    blogPostDao.deleteBlogPost(blogPost)
+                    onCompleteJob(
+                        DataState.data(
+                            data = null,
+                            response = Response(
+                                message = handleErrors(4003, application),
+                                responseType = ResponseType.Toast()
+                            )
+                        )
+                    )
+                }
+            }
+
+            override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<GenericResponse>) {
+                if (response.body.statusCode == 4003) {
+                    updateLocalDb(blogPost)
+                } else {
+                    onCompleteJob(
+                        DataState.error(
+                            Response(
+                                message = handleErrors(response.body.statusCode, application),
+                                responseType = ResponseType.Dialog()
+                            )
+                        )
+                    )
+                }
+            }
+
+            override fun createCall(): LiveData<GenericApiResponse<GenericResponse>> {
+                return blogxMainService.deleteBlogPost(
+                    authorization = authToken.authToken!!,
+                    blogId = blogPost.id
+                )
+            }
+
+            override fun setJob(job: Job) {
+                addJob("deleteBlogPost", job)
             }
 
         }.asLiveData()

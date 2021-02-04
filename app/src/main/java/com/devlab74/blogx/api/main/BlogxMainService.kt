@@ -51,4 +51,11 @@ interface BlogxMainService {
         @Header("auth-token") authorization: String,
         @Path("blogId") blogId: String
     ): LiveData<GenericApiResponse<BlogIsAuthorResponse>>
+
+    @DELETE("blog/{blogId}/delete")
+    fun deleteBlogPost(
+        @Header("api-access-token") apiAccessToken: String? = Constants.API_ACCESS_TOKEN,
+        @Header("auth-token") authorization: String,
+        @Path("blogId") blogId: String
+    ): LiveData<GenericApiResponse<GenericResponse>>
 }
