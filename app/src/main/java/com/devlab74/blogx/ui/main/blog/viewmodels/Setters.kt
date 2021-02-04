@@ -37,3 +37,19 @@ fun BlogViewModel.setQueryInProgress(inProgress: Boolean) {
     update.blogFields.isQueryInProgress = inProgress
     setViewState(update)
 }
+
+fun BlogViewModel.setBlogFilter(filter: String?) {
+    filter?.let {
+        val update = getCurrentViewStateOrNew()
+        update.blogFields.filter = filter
+        setViewState(update)
+    }
+}
+
+fun BlogViewModel.setBlogOrder(order: String?) {
+    order?.let {
+        val update = getCurrentViewStateOrNew()
+        update.blogFields.order = order
+        setViewState(update)
+    }
+}

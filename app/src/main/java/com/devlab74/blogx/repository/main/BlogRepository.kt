@@ -8,6 +8,7 @@ import com.devlab74.blogx.api.main.response.BlogListSearchResponse
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogPostDao
+import com.devlab74.blogx.persistence.returnOrderedBlogQuery
 import com.devlab74.blogx.repository.JobManager
 import com.devlab74.blogx.repository.NetworkBoundResource
 import com.devlab74.blogx.session.SessionManager
@@ -38,6 +39,7 @@ constructor(
     fun searchBlogPost(
         authToken: AuthToken,
         query: String,
+        filterAndOrder: String,
         page: Int
     ): LiveData<DataState<BlogViewState>> {
         return object : NetworkBoundResource<BlogListSearchResponse, List<BlogPost>, BlogViewState>(
@@ -66,8 +68,9 @@ constructor(
             }
 
             override fun loadFromCache(): LiveData<BlogViewState> {
-                return blogPostDao.getAllBlogPosts(
+                return blogPostDao.returnOrderedBlogQuery(
                     query,
+                    filterAndOrder,
                     page
                 )
                     .switchMap {
@@ -127,6 +130,7 @@ constructor(
                 return blogxMainService.searchListBlogPosts(
                     authorization = authToken.authToken!!,
                     query = query,
+                    ordering = filterAndOrder,
                     page = page
                 )
             }

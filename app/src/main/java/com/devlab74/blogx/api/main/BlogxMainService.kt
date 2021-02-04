@@ -40,6 +40,7 @@ interface BlogxMainService {
         @Header("api-access-token") apiAccessToken: String? = Constants.API_ACCESS_TOKEN,
         @Header("auth-token") authorization: String,
         @Query("search") query: String,
+        @Query("ordering") ordering: String,
         @Query("page") page: Int
     ): LiveData<GenericApiResponse<BlogListSearchResponse>>
 }
