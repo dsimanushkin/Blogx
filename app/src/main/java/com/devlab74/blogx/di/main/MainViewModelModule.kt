@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.devlab74.blogx.di.ViewModelKey
 import com.devlab74.blogx.ui.main.account.AccountViewModel
 import com.devlab74.blogx.ui.main.blog.viewmodels.BlogViewModel
+import com.devlab74.blogx.ui.main.create_blog.CreateBlogViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -20,5 +21,10 @@ abstract class MainViewModelModule {
     @IntoMap
     @ViewModelKey(BlogViewModel::class)
     abstract fun bindBlogViewModel(blogViewModel: BlogViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CreateBlogViewModel::class)
+    abstract fun bindCreateBlogViewModel(createBlogViewModel: CreateBlogViewModel): ViewModel
 
 }
