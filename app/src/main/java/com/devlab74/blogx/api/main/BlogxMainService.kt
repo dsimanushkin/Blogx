@@ -2,6 +2,7 @@ package com.devlab74.blogx.api.main
 
 import androidx.lifecycle.LiveData
 import com.devlab74.blogx.api.GenericResponse
+import com.devlab74.blogx.api.main.response.BlogIsAuthorResponse
 import com.devlab74.blogx.api.main.response.BlogListSearchResponse
 import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.util.Constants
@@ -43,4 +44,11 @@ interface BlogxMainService {
         @Query("ordering") ordering: String,
         @Query("page") page: Int
     ): LiveData<GenericApiResponse<BlogListSearchResponse>>
+
+    @GET("blog/{blogId}/is-author")
+    fun isAuthorOfBlogPost(
+        @Header("api-access-token") apiAccessToken: String? = Constants.API_ACCESS_TOKEN,
+        @Header("auth-token") authorization: String,
+        @Path("blogId") blogId: String
+    ): LiveData<GenericApiResponse<BlogIsAuthorResponse>>
 }

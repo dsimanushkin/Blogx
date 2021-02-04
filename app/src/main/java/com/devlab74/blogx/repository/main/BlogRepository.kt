@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.switchMap
 import com.devlab74.blogx.api.main.BlogxMainService
+import com.devlab74.blogx.api.main.response.BlogIsAuthorResponse
 import com.devlab74.blogx.api.main.response.BlogListSearchResponse
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.models.BlogPost
@@ -14,6 +15,7 @@ import com.devlab74.blogx.repository.NetworkBoundResource
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.DataState
 import com.devlab74.blogx.ui.main.blog.state.BlogViewState
+import com.devlab74.blogx.util.AbsentLiveData
 import com.devlab74.blogx.util.ApiSuccessResponse
 import com.devlab74.blogx.util.Constants.Companion.PAGINATION_PAGE_SIZE
 import com.devlab74.blogx.util.DateUtils
@@ -137,6 +139,62 @@ constructor(
 
             override fun setJob(job: Job) {
                 addJob("searchBlogPost", job)
+            }
+
+        }.asLiveData()
+    }
+
+    fun isAuthorOfBlogPost(
+        authToken: AuthToken,
+        blogId: String
+    ): LiveData<DataState<BlogViewState>> {
+        return object : NetworkBoundResource<BlogIsAuthorResponse, Any, BlogViewState>(
+            application,
+            sessionManager.isConnectedToTheInternet(),
+            true,
+            false,
+            true
+        ) {
+            // Not in use in this case
+            override suspend fun createCacheRequestAndReturn() {
+
+            }
+
+            // Not in use in this case
+            override fun loadFromCache(): LiveData<BlogViewState> {
+                return AbsentLiveData.create()
+            }
+
+            // Not in use in this case
+            override suspend fun updateLocalDb(cachedObject: Any?) {
+
+            }
+
+            override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<BlogIsAuthorResponse>) {
+                withContext(Main) {
+                    Timber.d("handleApiSuccessResponse: ${response.body.isAuthorOfBlogPost}")
+                    onCompleteJob(
+                        DataState.data(
+                            data = BlogViewState(
+                                viewBlogFields = BlogViewState.ViewBlogFields(
+                                    isAuthorOfBlogPost = response.body.isAuthorOfBlogPost
+                                )
+                            ),
+                            response = null
+                        )
+                    )
+                }
+            }
+
+            override fun createCall(): LiveData<GenericApiResponse<BlogIsAuthorResponse>> {
+                return blogxMainService.isAuthorOfBlogPost(
+                    authorization = authToken.authToken!!,
+                    blogId = blogId
+                )
+            }
+
+            override fun setJob(job: Job) {
+                addJob("isAuthorOfBlogPost", job)
             }
 
         }.asLiveData()
