@@ -11,6 +11,7 @@ import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.devlab74.blogx.R
 import com.devlab74.blogx.ui.DataStateChangeListener
+import com.devlab74.blogx.ui.main.blog.viewmodels.BlogViewModel
 import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
 import timber.log.Timber

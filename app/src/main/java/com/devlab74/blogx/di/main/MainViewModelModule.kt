@@ -3,7 +3,7 @@ package com.devlab74.blogx.di.main
 import androidx.lifecycle.ViewModel
 import com.devlab74.blogx.di.ViewModelKey
 import com.devlab74.blogx.ui.main.account.AccountViewModel
-import com.devlab74.blogx.ui.main.blog.BlogViewModel
+import com.devlab74.blogx.ui.main.blog.viewmodels.BlogViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

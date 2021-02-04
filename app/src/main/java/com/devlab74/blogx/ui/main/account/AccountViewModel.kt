@@ -6,6 +6,7 @@ import com.devlab74.blogx.repository.main.AccountRepository
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.BaseViewModel
 import com.devlab74.blogx.ui.DataState
+import com.devlab74.blogx.ui.Loading
 import com.devlab74.blogx.ui.main.account.state.AccountStateEvent
 import com.devlab74.blogx.ui.main.account.state.AccountViewState
 import com.devlab74.blogx.util.AbsentLiveData
@@ -53,7 +54,16 @@ constructor(
                 }?: AbsentLiveData.create()
             }
             is AccountStateEvent.None -> {
-                return AbsentLiveData.create()
+                return object : LiveData<DataState<AccountViewState>>() {
+                    override fun onActive() {
+                        super.onActive()
+                        value = DataState(
+                            null,
+                            Loading(false),
+                            null
+                        )
+                    }
+                }
             }
         }
     }
@@ -64,7 +74,7 @@ constructor(
             return
         }
         update.accountProperties = accountProperties
-        _viewState.value = update
+        setViewState(update)
     }
 
     fun cancelActiveJobs() {

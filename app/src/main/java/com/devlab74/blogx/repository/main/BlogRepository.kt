@@ -14,6 +14,7 @@ import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.DataState
 import com.devlab74.blogx.ui.main.blog.state.BlogViewState
 import com.devlab74.blogx.util.ApiSuccessResponse
+import com.devlab74.blogx.util.Constants.Companion.PAGINATION_PAGE_SIZE
 import com.devlab74.blogx.util.DateUtils
 import com.devlab74.blogx.util.GenericApiResponse
 import kotlinx.coroutines.Dispatchers.IO
@@ -36,7 +37,8 @@ constructor(
 
     fun searchBlogPost(
         authToken: AuthToken,
-        query: String
+        query: String,
+        page: Int
     ): LiveData<DataState<BlogViewState>> {
         return object : NetworkBoundResource<BlogListSearchResponse, List<BlogPost>, BlogViewState>(
             application,
@@ -49,6 +51,10 @@ constructor(
                 withContext(Main) {
                     // Finish by viewing the db cache
                     result.addSource(loadFromCache()) {viewState ->
+                        viewState.blogFields.isQueryInProgress = false
+                        if (page * PAGINATION_PAGE_SIZE > viewState.blogFields.blogList.size) {
+                            viewState.blogFields.isQueryExhausted = true
+                        }
                         onCompleteJob(
                             DataState.data(
                                 viewState,
@@ -60,14 +66,18 @@ constructor(
             }
 
             override fun loadFromCache(): LiveData<BlogViewState> {
-                return blogPostDao.getAllBlogPosts()
+                return blogPostDao.getAllBlogPosts(
+                    query,
+                    page
+                )
                     .switchMap {
                         object : LiveData<BlogViewState>() {
                             override fun onActive() {
                                 super.onActive()
                                 value = BlogViewState(
                                     BlogViewState.BlogFields(
-                                        blogList = it
+                                        blogList = it,
+                                        isQueryInProgress = true
                                     )
                                 )
                             }
@@ -116,7 +126,8 @@ constructor(
             override fun createCall(): LiveData<GenericApiResponse<BlogListSearchResponse>> {
                 return blogxMainService.searchListBlogPosts(
                     authorization = authToken.authToken!!,
-                    query = query
+                    query = query,
+                    page = page
                 )
             }
 

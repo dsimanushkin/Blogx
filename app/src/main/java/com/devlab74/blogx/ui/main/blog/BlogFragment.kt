@@ -12,7 +12,11 @@ import com.bumptech.glide.RequestManager
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentBlogBinding
 import com.devlab74.blogx.models.BlogPost
+import com.devlab74.blogx.ui.DataState
 import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
+import com.devlab74.blogx.ui.main.blog.state.BlogViewState
+import com.devlab74.blogx.ui.main.blog.viewmodels.*
+import com.devlab74.blogx.util.ErrorHandling
 import com.devlab74.blogx.util.TopSpacingItemDecoration
 import timber.log.Timber
 import javax.inject.Inject
@@ -41,21 +45,17 @@ class BlogFragment : BaseBlogFragment(),
 
         initRecyclerView()
         subscribeObservers()
-        executeSearch()
+
+        if (savedInstanceState == null) {
+            viewModel.loadFirstPage()
+        }
     }
 
     private fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             if (dataState != null) {
+                handlePagination(dataState)
                 stateChangeListener.onDataStateChange(dataState)
-                dataState.data?.let {
-                    it.data?.let { event ->
-                        event.getContentIfNotHandled()?.let {
-                            Timber.d("BlogFragment: DataState: $it")
-                            viewModel.setBlogListData(it.blogFields.blogList)
-                        }
-                    }
-                }
             }
         })
 
@@ -64,10 +64,21 @@ class BlogFragment : BaseBlogFragment(),
             if (viewState != null) {
                 recyclerAdapter.submitList(
                     list = viewState.blogFields.blogList,
-                    isQueryExhausted = true
+                    isQueryExhausted = viewState.blogFields.isQueryExhausted
                 )
             }
         })
+    }
+
+    private fun handlePagination(dataState: DataState<BlogViewState>) {
+        // Handle incoming data from DataState
+        dataState.data?.let {
+            it.data?.let {
+                it.getContentIfNotHandled()?.let {
+                    viewModel.handleIncomingBlogListData(it)
+                }
+            }
+        }
     }
 
     private fun initRecyclerView() {
@@ -89,19 +100,12 @@ class BlogFragment : BaseBlogFragment(),
                     val lastPosition = layoutManager.findLastVisibleItemPosition()
                     if (lastPosition == recyclerAdapter.itemCount.minus(1)) {
                         Timber.d("BlogFragment: attempting to load next page")
-                        // TODO: Load next page using ViewModel
+                        viewModel.nextPage()
                     }
                 }
             })
             adapter = recyclerAdapter
         }
-    }
-
-    private fun executeSearch() {
-        viewModel.setQuery("")
-        viewModel.setStateEvent(
-            BlogStateEvent.BlogSearchEvent()
-        )
     }
 
     override fun onItemSelected(position: Int, item: BlogPost) {
