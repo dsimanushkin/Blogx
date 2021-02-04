@@ -1,5 +1,6 @@
 package com.devlab74.blogx.ui.main.blog.viewmodels
 
+import android.net.Uri
 import com.devlab74.blogx.models.BlogPost
 
 fun BlogViewModel.getSearchQuery(): String {
@@ -63,4 +64,13 @@ fun BlogViewModel.getBlogPost(): BlogPost {
 
 fun BlogViewModel.getDummyBlogPost(): BlogPost {
     return BlogPost("null", "", "", "", 1, "")
+}
+
+fun BlogViewModel.getUpdatedBlogUri(): Uri? {
+    getCurrentViewStateOrNew().let {
+        it.updatedBlogFields.updateImageUri?.let {
+            return it
+        }
+    }
+    return null
 }

@@ -4,9 +4,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentUpdateBlogBinding
 import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
+import com.devlab74.blogx.ui.main.blog.viewmodels.onBlogPostUpdateSuccess
+import com.devlab74.blogx.ui.main.blog.viewmodels.setUpdatedBlogFields
 import okhttp3.MultipartBody
 
 class UpdateBlogFragment : BaseBlogFragment() {
@@ -36,7 +39,9 @@ class UpdateBlogFragment : BaseBlogFragment() {
                 data.data?.getContentIfNotHandled()?.let { viewState ->
                     // If this is not null, the blogpost was updated
                     viewState.viewBlogFields.blogPost?.let { blogPost ->
-                        // TODO: onBlogPostUpdateSuccess
+                        viewModel.onBlogPostUpdateSuccess(blogPost).let {
+                            findNavController().popBackStack()
+                        }
                     }
                 }
             }
@@ -87,6 +92,15 @@ class UpdateBlogFragment : BaseBlogFragment() {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.setUpdatedBlogFields(
+            uri = null,
+            title = binding.blogTitle.text.toString(),
+            body = binding.blogBody.text.toString()
+        )
     }
 
     override fun onDestroyView() {

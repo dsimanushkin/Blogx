@@ -79,10 +79,17 @@ class BlogFragment : BaseBlogFragment(),
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             Timber.d("BlogFragment: ViewState $viewState")
             if (viewState != null) {
-                recyclerAdapter.submitList(
-                    list = viewState.blogFields.blogList,
-                    isQueryExhausted = viewState.blogFields.isQueryExhausted
-                )
+                recyclerAdapter.apply {
+                    preloadGlideImages(
+                        requestManager,
+                        viewState.blogFields.blogList
+                    )
+
+                    submitList(
+                        list = viewState.blogFields.blogList,
+                        isQueryExhausted = viewState.blogFields.isQueryExhausted
+                    )
+                }
             }
         })
     }
