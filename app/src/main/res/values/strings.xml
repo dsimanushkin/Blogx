@@ -57,6 +57,8 @@
     <string name="menu_title_save">Save</string>
 
 
+    <string name="no_more_results">No more results&#8230;</string>
+
     <string name="fragment_account">Account</string>
     <string name="fragment_change_password">Change password</string>
     <string name="fragment_update_account">Update account</string>
