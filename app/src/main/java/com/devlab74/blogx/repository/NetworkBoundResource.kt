@@ -97,6 +97,7 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
                 handleApiSuccessResponse(response)
             }
             is ApiErrorResponse -> {
+                Timber.d("NetworkBoundResource: $response")
                 Timber.e("NetworkBoundResource: ${response.errorMessage}")
                 onErrorReturn(errorMessage = response.errorMessage, statusCode = 0, shouldUseDialog = true, shouldUseToast = false, application = application)
             }

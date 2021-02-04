@@ -72,4 +72,14 @@ interface BlogxMainService {
         @Part("body") body: RequestBody,
         @Part image: MultipartBody.Part?
     ): LiveData<GenericApiResponse<BlogCreateUpdateResponse>>
+
+    @Multipart
+    @POST("blog/create")
+    fun createBlog(
+        @Header("api-access-token") apiAccessToken: String? = Constants.API_ACCESS_TOKEN,
+        @Header("auth-token") authorization: String,
+        @Part("title") title: RequestBody,
+        @Part("body") body: RequestBody,
+        @Part image: MultipartBody.Part?
+    ): LiveData<GenericApiResponse<BlogCreateUpdateResponse>>
 }

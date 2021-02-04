@@ -83,6 +83,8 @@
     <string name="are_you_sure_delete">Are you sure you want to delete this? This can\'t be undone.</string>
 
     <string name="error_something_wrong_with_image">Something went wrong with the image.</string>
+    <string name="error_must_select_image">You must select an image.</string>
+    <string name="are_you_sure_publish">Are you sure you want to publish this?</string>
 
 
     <!-- API Errors -->
@@ -143,5 +145,6 @@
     <string name="unknown_error">Unknown Error</string>
     <string name="blog_filter_apply_button">Apply</string>
     <string name="blog_filter_cancel_button">Cancel</string>
+    <string name="menu_publish">Publish</string>
 
 </resources>
