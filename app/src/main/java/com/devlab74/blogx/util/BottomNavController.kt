@@ -3,6 +3,7 @@ package com.devlab74.blogx.util
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.os.Parcelable
 import androidx.annotation.IdRes
 import androidx.annotation.NavigationRes
 import androidx.fragment.app.Fragment
@@ -14,8 +15,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.parcel.Parcelize
 
-const val BOTTOM_NAV_BACKSTACK_KEY = "com.devlab74.blogx.util.BottomNavController.bottom_nav_backstack"
+const val BOTTOM_NAV_BACKSTACK_KEY = "com.devlab74.blogx.util.BottomNavController.BackStack"
 
 class BottomNavController(
     val context: Context,
@@ -104,7 +106,8 @@ class BottomNavController(
         }
     }
 
-    class BackStack : ArrayList<Int>() {
+    @Parcelize
+    class BackStack : ArrayList<Int>(), Parcelable {
         companion object {
             fun of(vararg elements: Int): BackStack {
                 val b = BackStack()

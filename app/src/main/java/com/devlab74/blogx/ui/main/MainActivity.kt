@@ -84,9 +84,9 @@ class MainActivity: BaseActivity(),
         }
         else{
             (savedInstanceState[BOTTOM_NAV_BACKSTACK_KEY] as IntArray?)?.let { items ->
-                val backstack = BottomNavController.BackStack()
-                backstack.addAll(items.toTypedArray())
-                bottomNavController.setupBottomNavigationBackStack(backstack)
+                val backStack = BottomNavController.BackStack()
+                backStack.addAll(items.toTypedArray())
+                bottomNavController.setupBottomNavigationBackStack(backStack)
             }
         }
     }
@@ -178,6 +178,11 @@ class MainActivity: BaseActivity(),
         outState.putParcelable(
             AUTH_TOKEN_BUNDLE_KEY,
             sessionManager.cachedToken.value
+        )
+
+        outState.putIntArray(
+            BOTTOM_NAV_BACKSTACK_KEY,
+            bottomNavController.navigationBackStack.toIntArray()
         )
 
         super.onSaveInstanceState(outState)
