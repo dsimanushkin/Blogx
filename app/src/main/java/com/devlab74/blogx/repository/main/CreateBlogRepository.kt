@@ -68,15 +68,22 @@ constructor(
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<BlogCreateUpdateResponse>) {
                 Timber.d("RESPONSE CREATE BLOG: $response")
 
-                val updateBlogPost = BlogPost(
-                    response.body.id,
-                    response.body.title,
-                    response.body.body,
-                    response.body.image,
-                    DateUtils.convertServerStringDateToLong(response.body.dateUpdated),
-                    response.body.username
-                )
-                updateLocalDb(updateBlogPost)
+                var updateBlogPost: BlogPost? = null
+
+                if (response.body.status == handleErrors(9005, application)) {
+                    return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = false, shouldUseToast = true, application = application)
+                } else {
+                    updateBlogPost = BlogPost(
+                        response.body.id!!,
+                        response.body.title!!,
+                        response.body.body!!,
+                        response.body.image!!,
+                        DateUtils.convertServerStringDateToLong(response.body.dateUpdated!!),
+                        response.body.username!!
+                    )
+                    updateLocalDb(updateBlogPost)
+                }
+
                 withContext(Main) {
                     // Finish with success response
                     onCompleteJob(

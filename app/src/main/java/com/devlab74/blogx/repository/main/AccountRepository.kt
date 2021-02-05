@@ -123,6 +123,11 @@ constructor(
             }
 
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<GenericResponse>) {
+
+                if (response.body.status == handleErrors(9005, application)) {
+                    return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = true, shouldUseToast = false, application = application)
+                }
+
                 updateLocalDb(null)
 
                 withContext(Main) {
@@ -183,6 +188,11 @@ constructor(
             }
 
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<GenericResponse>) {
+
+                if (response.body.status == handleErrors(9005, application)) {
+                    return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = true, shouldUseToast = false, application = application)
+                }
+
                 withContext(Main) {
                     // Finish with success response
                     onCompleteJob(

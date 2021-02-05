@@ -15,20 +15,20 @@ class BlogCreateUpdateResponse(
     var statusMessage: String,
 
     @Json(name = "id")
-    var id: String,
+    var id: String? = null,
 
     @Json(name = "title")
-    var title: String,
+    var title: String? = null,
 
     @Json(name = "body")
-    var body: String,
+    var body: String? = null,
 
     @Json(name = "image")
-    var image: String,
+    var image: String? = null,
 
     @Json(name = "date_updated")
-    var dateUpdated: String,
+    var dateUpdated: String? = null,
 
     @Json(name = "username")
-    var username: String
+    var username: String? = null
 )

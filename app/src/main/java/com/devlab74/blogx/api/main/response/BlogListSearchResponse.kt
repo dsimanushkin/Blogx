@@ -16,7 +16,7 @@ class BlogListSearchResponse(
     var statusMessage: String,
 
     @Json(name = "results")
-    var results: List<BlogSearchResponse>
+    var results: List<BlogSearchResponse>? = null
 
 ) {
 

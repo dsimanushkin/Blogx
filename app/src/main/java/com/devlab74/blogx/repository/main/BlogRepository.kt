@@ -117,9 +117,14 @@ constructor(
             }
 
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<BlogListSearchResponse>) {
+
+                if (response.body.status == handleErrors(9005, application)) {
+                    return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = false, shouldUseToast = true, application = application)
+                }
+
                 val blogPostList: ArrayList<BlogPost> = ArrayList()
 
-                for (blogPostResponse in response.body.results) {
+                for (blogPostResponse in response.body.results!!) {
                     blogPostList.add(
                         BlogPost(
                             id = blogPostResponse.id,
@@ -178,13 +183,18 @@ constructor(
             }
 
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<BlogIsAuthorResponse>) {
+
+                if (response.body.status == handleErrors(9005, application)) {
+                    return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = false, shouldUseToast = true, application = application)
+                }
+
                 withContext(Main) {
                     Timber.d("handleApiSuccessResponse: ${response.body.isAuthorOfBlogPost}")
                     onCompleteJob(
                         DataState.data(
                             data = BlogViewState(
                                 viewBlogFields = BlogViewState.ViewBlogFields(
-                                    isAuthorOfBlogPost = response.body.isAuthorOfBlogPost
+                                    isAuthorOfBlogPost = response.body.isAuthorOfBlogPost!!
                                 )
                             ),
                             response = null
@@ -308,18 +318,23 @@ constructor(
             }
 
             override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<BlogCreateUpdateResponse>) {
-                val updatedBlogPost = BlogPost(
-                    response.body.id,
-                    response.body.title,
-                    response.body.body,
-                    response.body.image,
-                    DateUtils.convertServerStringDateToLong(
-                        response.body.dateUpdated
-                    ),
-                    response.body.username
-                )
+                var updatedBlogPost: BlogPost? = null
 
-                updateLocalDb(updatedBlogPost)
+                if (response.body.status == handleErrors(9005, application)) {
+                    return onErrorReturn(errorMessage = null, statusCode = response.body.statusCode, shouldUseDialog = false, shouldUseToast = true, application = application)
+                } else {
+                    updatedBlogPost = BlogPost(
+                        response.body.id!!,
+                        response.body.title!!,
+                        response.body.body!!,
+                        response.body.image!!,
+                        DateUtils.convertServerStringDateToLong(
+                            response.body.dateUpdated!!
+                        ),
+                        response.body.username!!
+                    )
+                    updateLocalDb(updatedBlogPost)
+                }
 
                 withContext(Main) {
                     onCompleteJob(

@@ -28,6 +28,8 @@ class UpdateBlogFragment : BaseBlogFragment() {
     private var _binding: FragmentUpdateBlogBinding? = null
     private val binding get() = _binding!!
 
+    private var isImageUpdated: Boolean = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -95,15 +97,14 @@ class UpdateBlogFragment : BaseBlogFragment() {
                     }?: showErrorDialog(getString(R.string.error_something_wrong_with_image))
                 }
                 CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
-                    Timber.d("CROP: CROP_IMAGE_ACTIVITY_REQUEST_CODE")
                     val result = CropImage.getActivityResult(data)
                     val resultUri = result.uri
-                    Timber.d("CROP: CROP_IMAGE_ACTIVITY_REQUEST_CODE: uri: $resultUri")
                     viewModel.setUpdatedBlogFields(
                         title = null,
                         body = null,
                         uri = resultUri
                     )
+                    isImageUpdated = true
                 }
                 CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE -> {
                     showErrorDialog(getString(R.string.error_something_wrong_with_image))
@@ -134,33 +135,33 @@ class UpdateBlogFragment : BaseBlogFragment() {
 
     private fun saveChanges() {
         var multipartBody: MultipartBody.Part? = null
-        viewModel.getUpdatedImageUri()?.let { imageUrl ->
-            imageUrl.path?.let { filePath ->
-                val imageFile = File(filePath)
-                Timber.d("UpdateBlogFragment: imageFile: $imageFile")
-                val requestBody = RequestBody.create(
-                    MediaType.parse("image/jpg"),
-                    imageFile
-                )
-                multipartBody = MultipartBody.Part.createFormData(
-                    "image",
-                    imageFile.name,
-                    requestBody
-                )
+
+        if (isImageUpdated) {
+            viewModel.getUpdatedImageUri()?.let { imageUrl ->
+                imageUrl.path?.let { filePath ->
+                    val imageFile = File(filePath)
+                    Timber.d("UpdateBlogFragment: imageFile: $imageFile")
+                    val requestBody = RequestBody.create(
+                        MediaType.parse("image/jpg"),
+                        imageFile
+                    )
+                    multipartBody = MultipartBody.Part.createFormData(
+                        "image",
+                        imageFile.name,
+                        requestBody
+                    )
+                }
             }
         }
 
-        multipartBody?.let {
-            viewModel.setStateEvent(
-                BlogStateEvent.UpdatedBlogPostEvent(
-                    binding.blogTitle.text.toString(),
-                    binding.blogBody.text.toString(),
-                    it
-                )
+        viewModel.setStateEvent(
+            BlogStateEvent.UpdatedBlogPostEvent(
+                binding.blogTitle.text.toString(),
+                binding.blogBody.text.toString(),
+                multipartBody
             )
-
-            stateChangeListener.hideSoftKeyboard()
-        }?: showErrorDialog(getString(R.string.error_must_select_image))
+        )
+        stateChangeListener.hideSoftKeyboard()
     }
 
     private fun showErrorDialog(errorMessage: String) {

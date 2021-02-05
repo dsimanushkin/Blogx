@@ -15,7 +15,7 @@ class BlogIsAuthorResponse(
     var statusMessage: String,
 
     @Json(name = "is_author")
-    var isAuthorOfBlogPost: Boolean
+    var isAuthorOfBlogPost: Boolean? = null
 ) {
     override fun toString(): String {
         return "BlogIsAuthorResponse(status='$status', statusCode=$statusCode, statusMessage='$statusMessage', isAuthorOfBlogPost=$isAuthorOfBlogPost)"
