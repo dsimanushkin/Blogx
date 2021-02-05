@@ -62,10 +62,6 @@ class BlogFragment : BaseBlogFragment(),
 
         initRecyclerView()
         subscribeObservers()
-
-        if (savedInstanceState == null) {
-            viewModel.loadFirstPage()
-        }
     }
 
     private fun subscribeObservers() {
@@ -81,7 +77,7 @@ class BlogFragment : BaseBlogFragment(),
             if (viewState != null) {
                 recyclerAdapter.apply {
                     preloadGlideImages(
-                        requestManager,
+                        dependencyProvider.getGlideRequestManager(),
                         viewState.blogFields.blogList
                     )
 
@@ -113,7 +109,7 @@ class BlogFragment : BaseBlogFragment(),
             addItemDecoration(topSpacingItemDecoration)
 
             recyclerAdapter = BlogListAdapter(
-                requestManager = requestManager,
+                requestManager = dependencyProvider.getGlideRequestManager(),
                 interaction = this@BlogFragment
             )
 
@@ -240,6 +236,18 @@ class BlogFragment : BaseBlogFragment(),
         binding.focusableView.requestFocus()
     }
 
+    private fun saveLayoutManagerState() {
+        binding.blogPostRecyclerview.layoutManager?.onSaveInstanceState()?.let { lmState ->
+            viewModel.setLayoutManagerState(lmState)
+        }
+    }
+
+    override fun restoreListPosition() {
+        viewModel.viewState.value?.blogFields?.layoutManagerState?.let { lmState ->
+            binding.blogPostRecyclerview.layoutManager?.onRestoreInstanceState(lmState)
+        }
+    }
+
     override fun onRefresh() {
         onBlogSearchOrFilter()
         binding.swipeRefresh.isRefreshing = false
@@ -263,6 +271,16 @@ class BlogFragment : BaseBlogFragment(),
         Timber.d("onItemSelected: position, BlogPost: $position, $item")
         viewModel.setBlogPost(item)
         findNavController().navigate(R.id.action_blogFragment_to_viewBlogFragment)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshFromCache()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveLayoutManagerState()
     }
 
     override fun onDestroyView() {

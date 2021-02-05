@@ -7,8 +7,11 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
+import com.bumptech.glide.RequestManager
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.ActivityMainBinding
+import com.devlab74.blogx.models.AUTH_TOKEN_BUNDLE_KEY
+import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.ui.BaseActivity
 import com.devlab74.blogx.ui.auth.AuthActivity
 import com.devlab74.blogx.ui.main.account.BaseAccountFragment
@@ -21,14 +24,25 @@ import com.devlab74.blogx.ui.main.create_blog.BaseCreateBlogFragment
 import com.devlab74.blogx.util.BOTTOM_NAV_BACKSTACK_KEY
 import com.devlab74.blogx.util.BottomNavController
 import com.devlab74.blogx.util.setUpNavigation
+import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
 import timber.log.Timber
+import javax.inject.Inject
 
 class MainActivity: BaseActivity(),
     BottomNavController.NavGraphProvider,
     BottomNavController.OnNavigationGraphChanged,
-    BottomNavController.OnNavigationReselectedListener
+    BottomNavController.OnNavigationReselectedListener,
+    MainDependencyProvider
 {
     private lateinit var binding: ActivityMainBinding
+
+    @Inject
+    lateinit var requestManager: RequestManager
+
+    @Inject
+    lateinit var providerFactory: ViewModelProviderFactory
+
+
 
     private val bottomNavController: BottomNavController by lazy(LazyThreadSafetyMode.NONE) {
         BottomNavController(
@@ -49,6 +63,8 @@ class MainActivity: BaseActivity(),
         setupBottomNavigationView(savedInstanceState)
 
         subscribeObservers()
+
+        restoreSession(savedInstanceState)
     }
 
     private fun subscribeObservers() {
@@ -144,5 +160,26 @@ class MainActivity: BaseActivity(),
         } else {
             binding.progressBar.visibility = View.INVISIBLE
         }
+    }
+
+    override fun getVMProviderFactory() = providerFactory
+
+    override fun getGlideRequestManager() = requestManager
+
+    private fun restoreSession(savedInstanceState: Bundle?) {
+        savedInstanceState?.let {inState ->
+            inState[AUTH_TOKEN_BUNDLE_KEY]?.let { authToken ->
+                sessionManager.setValue(authToken as AuthToken)
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(
+            AUTH_TOKEN_BUNDLE_KEY,
+            sessionManager.cachedToken.value
+        )
+
+        super.onSaveInstanceState(outState)
     }
 }

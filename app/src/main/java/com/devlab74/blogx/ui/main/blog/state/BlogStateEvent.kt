@@ -9,6 +9,8 @@ sealed class BlogStateEvent {
 
     class DeleteBlogPostEvent: BlogStateEvent()
 
+    class RestoreBlogListFromCache: BlogStateEvent()
+
     data class UpdatedBlogPostEvent(
         var title: String,
         var body: String,

@@ -1,15 +1,18 @@
 package com.devlab74.blogx.models
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.android.parcel.Parcelize
 
 @JsonClass(generateAdapter = true)
 @Entity(
     tableName = "blog_post",
     primaryKeys = ["id"]
 )
+@Parcelize
 data class BlogPost(
 
     @Json(name = "id")
@@ -36,4 +39,4 @@ data class BlogPost(
     @ColumnInfo(name = "username")
     var username: String
 
-)
+) : Parcelable

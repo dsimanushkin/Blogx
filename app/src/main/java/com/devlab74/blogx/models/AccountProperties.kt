@@ -1,11 +1,13 @@
 package com.devlab74.blogx.models
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.android.parcel.Parcelize
 
 @JsonClass(generateAdapter = true)
 @Entity(
@@ -15,6 +17,7 @@ import com.squareup.moshi.JsonClass
     ],
     primaryKeys = ["id"]
 )
+@Parcelize
 data class AccountProperties(
 
     @Json(name = "id")
@@ -29,7 +32,7 @@ data class AccountProperties(
     @ColumnInfo(name = "username")
     var username: String
 
-) {
+) : Parcelable {
 
     override fun equals(other: Any?): Boolean {
         if (javaClass != other?.javaClass) {

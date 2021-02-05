@@ -38,3 +38,9 @@ fun BlogViewModel.handleIncomingBlogListData(viewState: BlogViewState) {
     setQueryExhausted(viewState.blogFields.isQueryExhausted)
     setBlogListData(viewState.blogFields.blogList)
 }
+
+fun BlogViewModel.refreshFromCache() {
+    setQueryInProgress(true)
+    setQueryExhausted(false)
+    setStateEvent(BlogStateEvent.RestoreBlogListFromCache())
+}

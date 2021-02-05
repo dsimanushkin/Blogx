@@ -42,14 +42,16 @@ class ChangePasswordFragment: BaseAccountFragment() {
 
     private fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            stateChangeListener.onDataStateChange(dataState)
-            Timber.d("ChangePasswordFragment: DataState: $dataState")
             if (dataState != null) {
-                dataState.data?.let { data ->
-                    data.response?.let { event ->
-                        if (event.peekContent().message == handleErrors(3006, activity?.application!!)) {
-                            stateChangeListener.hideSoftKeyboard()
-                            findNavController().popBackStack()
+                stateChangeListener.onDataStateChange(dataState)
+                Timber.d("ChangePasswordFragment: DataState: $dataState")
+                if (dataState != null) {
+                    dataState.data?.let { data ->
+                        data.response?.let { event ->
+                            if (event.peekContent().message == handleErrors(3006, activity?.application!!)) {
+                                stateChangeListener.hideSoftKeyboard()
+                                findNavController().popBackStack()
+                            }
                         }
                     }
                 }

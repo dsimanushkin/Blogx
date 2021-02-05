@@ -1,6 +1,7 @@
 package com.devlab74.blogx.ui.main.blog.viewmodels
 
 import android.net.Uri
+import android.os.Parcelable
 import com.devlab74.blogx.models.BlogPost
 
 fun BlogViewModel.setQuery(query: String) {
@@ -102,4 +103,16 @@ fun BlogViewModel.onBlogPostUpdateSuccess(blogPost: BlogPost) {
     ) // Update UpdateBlogFragment
     setBlogPost(blogPost) // Update ViewBlogFragment
     updateListItem(blogPost) // Update BlogFragment
+}
+
+fun BlogViewModel.setLayoutManagerState(layoutManagerState: Parcelable) {
+    val update = getCurrentViewStateOrNew()
+    update.blogFields.layoutManagerState = layoutManagerState
+    setViewState(update)
+}
+
+fun BlogViewModel.clearLayoutManagerState() {
+    val update = getCurrentViewStateOrNew()
+    update.blogFields.layoutManagerState = null
+    setViewState(update)
 }
