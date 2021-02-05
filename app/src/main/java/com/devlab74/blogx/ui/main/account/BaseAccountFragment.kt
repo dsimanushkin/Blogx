@@ -4,11 +4,13 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.devlab74.blogx.R
+import com.devlab74.blogx.di.Injectable
 import com.devlab74.blogx.ui.DataStateChangeListener
 import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
@@ -17,7 +19,7 @@ import java.lang.ClassCastException
 import java.lang.Exception
 import javax.inject.Inject
 
-abstract class BaseAccountFragment: DaggerFragment() {
+abstract class BaseAccountFragment: Fragment(), Injectable {
 
     lateinit var stateChangeListener: DataStateChangeListener
 

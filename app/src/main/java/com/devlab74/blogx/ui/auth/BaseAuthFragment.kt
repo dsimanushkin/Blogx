@@ -2,13 +2,15 @@ package com.devlab74.blogx.ui.auth
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.devlab74.blogx.di.Injectable
 import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
 import java.lang.Exception
 import javax.inject.Inject
 
-abstract class BaseAuthFragment: DaggerFragment() {
+abstract class BaseAuthFragment: Fragment(), Injectable {
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
 

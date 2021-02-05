@@ -4,12 +4,14 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.devlab74.blogx.R
+import com.devlab74.blogx.di.Injectable
 import com.devlab74.blogx.ui.DataStateChangeListener
 import com.devlab74.blogx.ui.UICommunicationListener
 import com.devlab74.blogx.ui.main.blog.viewmodels.BlogViewModel
@@ -20,7 +22,7 @@ import java.lang.ClassCastException
 import java.lang.Exception
 import javax.inject.Inject
 
-abstract class BaseBlogFragment: DaggerFragment() {
+abstract class BaseBlogFragment: Fragment(), Injectable {
 
     lateinit var stateChangeListener: DataStateChangeListener
     lateinit var uiCommunicationListener: UICommunicationListener
