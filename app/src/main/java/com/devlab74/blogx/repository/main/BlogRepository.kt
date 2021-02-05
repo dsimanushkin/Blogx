@@ -8,6 +8,7 @@ import com.devlab74.blogx.api.main.BlogxMainService
 import com.devlab74.blogx.api.main.response.BlogCreateUpdateResponse
 import com.devlab74.blogx.api.main.response.BlogIsAuthorResponse
 import com.devlab74.blogx.api.main.response.BlogListSearchResponse
+import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogPostDao
@@ -36,6 +37,7 @@ import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
 
+@MainScope
 class BlogRepository
 @Inject
 constructor(

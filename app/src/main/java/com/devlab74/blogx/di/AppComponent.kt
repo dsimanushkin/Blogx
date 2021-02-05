@@ -1,25 +1,25 @@
 package com.devlab74.blogx.di
 
 import android.app.Application
-import com.devlab74.blogx.BaseApplication
+import com.devlab74.blogx.di.auth.AuthComponent
+import com.devlab74.blogx.di.main.MainComponent
 import com.devlab74.blogx.session.SessionManager
+import com.devlab74.blogx.ui.BaseActivity
 import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjectionModule
-import dagger.android.AndroidInjector
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [
-        AndroidInjectionModule::class,
         AppModule::class,
-        ActivityBuildersModule::class,
-        ViewModelFactoryModule::class
+        SubComponentsModule::class
     ]
 )
-interface AppComponent: AndroidInjector<BaseApplication> {
+interface AppComponent {
     val sessionManager: SessionManager
+
+    fun inject(baseActivity: BaseActivity)
 
     @Component.Builder
     interface Builder{
@@ -28,4 +28,8 @@ interface AppComponent: AndroidInjector<BaseApplication> {
 
         fun build(): AppComponent
     }
+
+    fun authComponent(): AuthComponent.Factory
+
+    fun mainComponent(): MainComponent.Factory
 }

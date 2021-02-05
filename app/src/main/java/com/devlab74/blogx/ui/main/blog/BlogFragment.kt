@@ -8,7 +8,9 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,11 +22,13 @@ import com.bumptech.glide.RequestManager
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentBlogBinding
 import com.devlab74.blogx.databinding.LayoutBlogFilterBinding
+import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_DATE_UPDATED
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_USERNAME
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_ORDER_ASC
 import com.devlab74.blogx.ui.DataState
+import com.devlab74.blogx.ui.main.blog.state.BLOG_VIEW_STATE_BUNDLE_KEY
 import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
 import com.devlab74.blogx.ui.main.blog.state.BlogViewState
 import com.devlab74.blogx.ui.main.blog.viewmodels.*
@@ -34,16 +38,39 @@ import kotlinx.android.synthetic.main.layout_blog_filter.view.*
 import timber.log.Timber
 import javax.inject.Inject
 
-class BlogFragment : BaseBlogFragment(),
+@MainScope
+class BlogFragment
+@Inject
+constructor(
+    private val viewModelFactory: ViewModelProvider.Factory,
+    private val requestManager: RequestManager
+): BaseBlogFragment(),
     BlogListAdapter.Interaction,
     SwipeRefreshLayout.OnRefreshListener
 {
     private var _binding: FragmentBlogBinding? = null
     private val binding get() = _binding!!
 
+    val viewModel: BlogViewModel by viewModels {
+        viewModelFactory
+    }
+
     private lateinit var recyclerAdapter: BlogListAdapter
 
     private lateinit var searchView: SearchView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        cancelActiveJobs()
+
+        // Restore state after process death
+        savedInstanceState?.let { inState ->
+            (inState[BLOG_VIEW_STATE_BUNDLE_KEY] as BlogViewState?)?.let { viewState ->
+                viewModel.setViewState(viewState)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,7 +104,7 @@ class BlogFragment : BaseBlogFragment(),
             if (viewState != null) {
                 recyclerAdapter.apply {
                     preloadGlideImages(
-                        dependencyProvider.getGlideRequestManager(),
+                        requestManager,
                         viewState.blogFields.blogList
                     )
 
@@ -109,7 +136,7 @@ class BlogFragment : BaseBlogFragment(),
             addItemDecoration(topSpacingItemDecoration)
 
             recyclerAdapter = BlogListAdapter(
-                requestManager = dependencyProvider.getGlideRequestManager(),
+                requestManager = requestManager,
                 interaction = this@BlogFragment
             )
 
@@ -287,5 +314,20 @@ class BlogFragment : BaseBlogFragment(),
         super.onDestroyView()
         binding.blogPostRecyclerview.adapter = null // Clear references (Can leak memory)
         _binding = null
+    }
+
+    override fun cancelActiveJobs() {
+        viewModel.cancelActiveJobs()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        val viewState = viewModel.viewState.value
+        viewState?.blogFields?.blogList = ArrayList()
+        outState.putParcelable(
+            BLOG_VIEW_STATE_BUNDLE_KEY,
+            viewState
+        )
+
+        super.onSaveInstanceState(outState)
     }
 }

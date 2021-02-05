@@ -5,9 +5,10 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import com.bumptech.glide.RequestManager
+import com.devlab74.blogx.BaseApplication
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.ActivityMainBinding
 import com.devlab74.blogx.models.AUTH_TOKEN_BUNDLE_KEY
@@ -24,32 +25,37 @@ import com.devlab74.blogx.ui.main.create_blog.BaseCreateBlogFragment
 import com.devlab74.blogx.util.BOTTOM_NAV_BACKSTACK_KEY
 import com.devlab74.blogx.util.BottomNavController
 import com.devlab74.blogx.util.setUpNavigation
-import com.devlab74.blogx.viewmodels.ViewModelProviderFactory
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Named
 
 class MainActivity: BaseActivity(),
-    BottomNavController.NavGraphProvider,
     BottomNavController.OnNavigationGraphChanged,
-    BottomNavController.OnNavigationReselectedListener,
-    MainDependencyProvider
+    BottomNavController.OnNavigationReselectedListener
 {
     private lateinit var binding: ActivityMainBinding
 
-    @Inject
-    lateinit var requestManager: RequestManager
+    override fun inject() {
+        (application as BaseApplication).mainComponent().inject(this)
+    }
 
     @Inject
-    lateinit var providerFactory: ViewModelProviderFactory
+    @Named("AccountFragmentFactory")
+    lateinit var accountFragmentFactory: FragmentFactory
 
+    @Inject
+    @Named("BlogFragmentFactory")
+    lateinit var blogFragmentFactory: FragmentFactory
 
+    @Inject
+    @Named("CreateBlogFragmentFactory")
+    lateinit var createBlogFragmentFactory: FragmentFactory
 
     private val bottomNavController: BottomNavController by lazy(LazyThreadSafetyMode.NONE) {
         BottomNavController(
             this,
             binding.mainNavHostFragment.id,
-            R.id.nav_blog,
-            this,
+            R.id.menu_nav_blog,
             this
         )
     }
@@ -89,13 +95,6 @@ class MainActivity: BaseActivity(),
                 bottomNavController.setupBottomNavigationBackStack(backStack)
             }
         }
-    }
-
-    override fun getNavGraphId(itemId: Int) = when(itemId) {
-        R.id.nav_blog -> R.navigation.nav_blog
-        R.id.nav_account -> R.navigation.nav_account
-        R.id.nav_create_blog -> R.navigation.nav_create_blog
-        else -> R.navigation.nav_blog
     }
 
     override fun onGraphChange() {
@@ -152,6 +151,7 @@ class MainActivity: BaseActivity(),
         val intent = Intent(this, AuthActivity::class.java)
         startActivity(intent)
         finish()
+        (application as BaseApplication).releaseMainComponent()
     }
 
     override fun displayProgressBar(bool: Boolean) {
@@ -161,10 +161,6 @@ class MainActivity: BaseActivity(),
             binding.progressBar.visibility = View.INVISIBLE
         }
     }
-
-    override fun getVMProviderFactory() = providerFactory
-
-    override fun getGlideRequestManager() = requestManager
 
     private fun restoreSession(savedInstanceState: Bundle?) {
         savedInstanceState?.let {inState ->

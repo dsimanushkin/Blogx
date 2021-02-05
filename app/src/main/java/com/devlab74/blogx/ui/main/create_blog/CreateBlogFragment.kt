@@ -6,13 +6,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.RequestManager
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentCreateBlogBinding
+import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.ui.*
+import com.devlab74.blogx.ui.main.create_blog.state.CREATE_BLOG_VIEW_STATE_BUNDLE_KEY
 import com.devlab74.blogx.ui.main.create_blog.state.CreateBlogStateEvent
+import com.devlab74.blogx.ui.main.create_blog.state.CreateBlogViewState
 import com.devlab74.blogx.util.Constants.Companion.GALLERY_REQUEST_CODE
-import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import okhttp3.MediaType
@@ -20,10 +25,34 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 
-class CreateBlogFragment: BaseCreateBlogFragment() {
+@MainScope
+class CreateBlogFragment
+@Inject
+constructor(
+    private val viewModelFactory: ViewModelProvider.Factory,
+    private val requestManager: RequestManager
+): BaseCreateBlogFragment() {
     private var _binding: FragmentCreateBlogBinding? = null
     private val binding get() = _binding!!
+
+    val viewModel: CreateBlogViewModel by viewModels {
+        viewModelFactory
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        cancelActiveJobs()
+
+        // Restore state after process death
+        savedInstanceState?.let { inState ->
+            (inState[CREATE_BLOG_VIEW_STATE_BUNDLE_KEY] as CreateBlogViewState?)?.let { viewState ->
+                viewModel.setViewState(viewState)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -118,7 +147,7 @@ class CreateBlogFragment: BaseCreateBlogFragment() {
         image: Uri?
     ) {
         image?.let {
-            dependencyProvider.getGlideRequestManager()
+            requestManager
                 .load(image)
                 .into(binding.blogImage)
         }?: setDefaultImage()
@@ -128,7 +157,7 @@ class CreateBlogFragment: BaseCreateBlogFragment() {
     }
 
     private fun setDefaultImage() {
-        dependencyProvider.getGlideRequestManager()
+        requestManager
             .load(R.drawable.default_image)
             .into(binding.blogImage)
     }
@@ -232,5 +261,18 @@ class CreateBlogFragment: BaseCreateBlogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun cancelActiveJobs() {
+        viewModel.cancelActiveJobs()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(
+            CREATE_BLOG_VIEW_STATE_BUNDLE_KEY,
+            viewModel.viewState.value
+        )
+
+        super.onSaveInstanceState(outState)
     }
 }

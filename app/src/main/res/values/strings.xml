@@ -86,6 +86,8 @@
     <string name="error_must_select_image">You must select an image.</string>
     <string name="are_you_sure_publish">Are you sure you want to publish this?</string>
 
+    <string name="AuthNavHost">AuthNavHost</string>
+
 
     <!-- API Errors -->
     <string name="username_field_required">Username field required.</string>

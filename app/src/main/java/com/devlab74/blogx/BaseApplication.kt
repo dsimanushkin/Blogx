@@ -1,27 +1,53 @@
 package com.devlab74.blogx
 
 import android.app.Application
-import com.devlab74.blogx.di.AppInjector
+import com.devlab74.blogx.di.AppComponent
 import com.devlab74.blogx.di.DaggerAppComponent
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasAndroidInjector
-import dagger.android.support.DaggerApplication
+import com.devlab74.blogx.di.auth.AuthComponent
+import com.devlab74.blogx.di.main.MainComponent
 import timber.log.Timber
-import javax.inject.Inject
 
-class BaseApplication: Application(), HasAndroidInjector {
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
+class BaseApplication: Application() {
+    lateinit var appComponent: AppComponent
+
+    private var authComponent: AuthComponent? = null
+
+    private var mainComponent: MainComponent? = null
 
     override fun onCreate() {
         super.onCreate()
-        AppInjector.init(this)
+        initAppComponent()
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
     }
 
-    override fun androidInjector() = dispatchingAndroidInjector
+    fun initAppComponent() {
+        appComponent = DaggerAppComponent.builder()
+            .application(this)
+            .build()
+    }
+
+    fun authComponent(): AuthComponent {
+        if (authComponent == null) {
+            authComponent = appComponent.authComponent().create()
+        }
+        return authComponent as AuthComponent
+    }
+
+    fun mainComponent(): MainComponent {
+        if (mainComponent == null) {
+            mainComponent = appComponent.mainComponent().create()
+        }
+        return mainComponent as MainComponent
+    }
+
+    fun releaseAuthComponent() {
+        authComponent = null
+    }
+
+    fun releaseMainComponent() {
+        mainComponent = null
+    }
 }

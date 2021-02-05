@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import com.devlab74.blogx.api.auth.BlogxAuthService
 import com.devlab74.blogx.api.auth.network_responses.LoginResponse
 import com.devlab74.blogx.api.auth.network_responses.RegistrationResponse
+import com.devlab74.blogx.di.auth.AuthScope
+import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.persistence.AccountPropertiesDao
@@ -29,6 +31,7 @@ import kotlinx.coroutines.Job
 import timber.log.Timber
 import javax.inject.Inject
 
+@AuthScope
 class AuthRepository
 @Inject
 constructor(

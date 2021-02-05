@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import com.devlab74.blogx.api.main.BlogxMainService
 import com.devlab74.blogx.api.main.response.BlogCreateUpdateResponse
+import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogPostDao
@@ -27,6 +28,7 @@ import okhttp3.RequestBody
 import timber.log.Timber
 import javax.inject.Inject
 
+@MainScope
 class CreateBlogRepository
 @Inject
 constructor(

@@ -5,6 +5,7 @@ import com.devlab74.blogx.api.GenericResponse
 import com.devlab74.blogx.api.main.response.BlogCreateUpdateResponse
 import com.devlab74.blogx.api.main.response.BlogIsAuthorResponse
 import com.devlab74.blogx.api.main.response.BlogListSearchResponse
+import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.util.Constants
 import com.devlab74.blogx.util.GenericApiResponse
@@ -12,6 +13,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
 
+@MainScope
 interface BlogxMainService {
 
     @GET("account/properties")

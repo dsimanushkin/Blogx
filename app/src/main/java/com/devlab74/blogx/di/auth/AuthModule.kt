@@ -12,8 +12,9 @@ import dagger.Provides
 import retrofit2.Retrofit
 
 @Module
-class AuthModule {
+object AuthModule {
 
+    @JvmStatic
     @AuthScope
     @Provides
     fun provideAuthApiService(retrofitBuilder: Retrofit.Builder): BlogxAuthService {
@@ -22,6 +23,7 @@ class AuthModule {
             .create(BlogxAuthService::class.java)
     }
 
+    @JvmStatic
     @AuthScope
     @Provides
     fun provideAuthRepository(
