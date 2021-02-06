@@ -1,21 +1,25 @@
 package com.devlab74.blogx.ui.auth.state
 
 import android.app.Application
+import android.os.Parcelable
 import com.devlab74.blogx.R
 import com.devlab74.blogx.models.AuthToken
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class AuthViewState(
-    var registrationFields: RegistrationFields? = RegistrationFields(),
-    var loginFields: LoginFields? = LoginFields(),
+    var registrationFields: RegistrationFields? = null,
+    var loginFields: LoginFields? = null,
     var authToken: AuthToken? = null
-)
+) : Parcelable
 
+@Parcelize
 data class RegistrationFields(
     var registrationEmail: String? = null,
     var registrationUsername: String? = null,
     var registrationPassword: String? = null,
     var registrationConfirmPassword: String? = null
-) {
+) : Parcelable {
     class RegistrationError() {
         companion object {
             fun mustFillAllFields(application: Application): String {
@@ -45,10 +49,11 @@ data class RegistrationFields(
     }
 }
 
+@Parcelize
 data class LoginFields(
     var loginUsername: String? = null,
     var loginPassword: String? = null
-) {
+) : Parcelable {
     class LoginError {
         companion object {
             fun mustFillAllFields(application: Application): String {

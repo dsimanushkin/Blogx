@@ -13,35 +13,32 @@ import com.devlab74.blogx.databinding.FragmentViewBlogBinding
 import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.ui.AreYouSureCallback
-import com.devlab74.blogx.ui.UIMessage
-import com.devlab74.blogx.ui.UIMessageType
 import com.devlab74.blogx.ui.main.blog.state.BLOG_VIEW_STATE_BUNDLE_KEY
 import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
 import com.devlab74.blogx.ui.main.blog.state.BlogViewState
 import com.devlab74.blogx.ui.main.blog.viewmodels.*
-import com.devlab74.blogx.util.DateUtils
+import com.devlab74.blogx.util.*
+import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @MainScope
 class ViewBlogFragment
 @Inject
 constructor(
-    private val viewModelFactory: ViewModelProvider.Factory,
+    viewModelFactory: ViewModelProvider.Factory,
     private val requestManager: RequestManager
-): BaseBlogFragment() {
+): BaseBlogFragment(viewModelFactory) {
     private var _binding: FragmentViewBlogBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: BlogViewModel by viewModels {
-        viewModelFactory
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        cancelActiveJobs()
 
         // Restore state after process death
         savedInstanceState?.let { inState ->
@@ -62,44 +59,84 @@ constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setHasOptionsMenu(true)
         subscribeObservers()
         checkIsAuthorOfBlogPost()
-        stateChangeListener.expandAppBar()
+        uiCommunicationListener.expandAppBar()
 
         binding.deleteButton.setOnClickListener {
             confirmDeleteRequest()
         }
     }
 
-    private fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            if (dataState != null) {
-                stateChangeListener.onDataStateChange(dataState)
-                dataState.data?.let { data ->
-                    data.data?.getContentIfNotHandled()?.let { viewState ->
-                        viewModel.setIsAuthorOfBlogPost(
-                            viewState.viewBlogFields.isAuthorOfBlogPost
-                        )
-                    }
-                    data.response?.peekContent()?.let { response ->
-                        if (response.message == getString(R.string.blog_deleted_successfully)) {
-                            viewModel.removeDeletedBlogPost()
-                            findNavController().popBackStack()
-                        }
-                    }
+    // !IMPORTANT!
+    // Must save ViewState b/c in event of process death the LiveData in ViewModel will be lost
+    override fun onSaveInstanceState(outState: Bundle) {
+        val viewState = viewModel.viewState.value
+        viewState?.blogFields?.blogList = ArrayList()
+        outState.putParcelable(
+            BLOG_VIEW_STATE_BUNDLE_KEY,
+            viewState
+        )
+
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun confirmDeleteRequest() {
+        val callback: AreYouSureCallback = object : AreYouSureCallback {
+            override fun proceed() {
+                deleteBlogPost()
+            }
+
+            override fun cancel() {
+                // Ignore
+            }
+        }
+        uiCommunicationListener.onResponseReceived(
+            response = Response(
+                message = getString(R.string.are_you_sure_delete),
+                uiComponentType = UIComponentType.AreYouSureDialog(callback),
+                messageType = MessageType.Info()
+            ),
+            stateMessageCallback = object: StateMessageCallback {
+                override fun removeMessageFromStack() {
+                    viewModel.clearStateMessage()
                 }
             }
-        })
+        )
+    }
 
+    fun subscribeObservers(){
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.viewBlogFields.blogPost?.let { blogPost ->
+            viewState.viewBlogFields.blogPost?.let{ blogPost ->
                 setBlogProperties(blogPost)
             }
 
-            if (viewState.viewBlogFields.isAuthorOfBlogPost) {
+            if(viewState.viewBlogFields.isAuthorOfBlogPost == true){
                 adaptViewToAuthorMode()
+            }
+        })
+
+        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer {
+            uiCommunicationListener.displayProgressBar(viewModel.areAnyJobsActive())
+        })
+
+        viewModel.stateMessage.observe(viewLifecycleOwner, Observer { stateMessage ->
+            Timber.d("View Blog Fragment: stateMessage: $stateMessage")
+            if(stateMessage?.response?.message == handleErrors(4003, activity?.application!!)){
+                viewModel.removeDeletedBlogPost()
+                findNavController().popBackStack()
+            }
+
+            stateMessage?.let {
+                uiCommunicationListener.onResponseReceived(
+                    response = it.response,
+                    stateMessageCallback = object: StateMessageCallback {
+                        override fun removeMessageFromStack() {
+                            viewModel.clearStateMessage()
+                        }
+                    }
+                )
             }
         })
     }
@@ -118,24 +155,6 @@ constructor(
     private fun checkIsAuthorOfBlogPost() {
         viewModel.setIsAuthorOfBlogPost(false) // reset
         viewModel.setStateEvent(BlogStateEvent.CheckAuthorOfBlogPost())
-    }
-
-    private fun confirmDeleteRequest() {
-        val callback: AreYouSureCallback = object : AreYouSureCallback {
-            override fun proceed() {
-                deleteBlogPost()
-            }
-
-            override fun cancel() {
-                // Ignore
-            }
-        }
-        uiCommunicationListener.onUIMessageReceived(
-            UIMessage(
-                getString(R.string.are_you_sure_delete),
-                UIMessageType.AreYouSureDialog(callback)
-            )
-        )
     }
 
     private fun setBlogProperties(blogPost: BlogPost) {
@@ -167,12 +186,10 @@ constructor(
 
     fun navUpdateBlogFragment() {
         try {
-            // Prer for next fragment
-            viewModel.setUpdatedBlogFields(
-                viewModel.getBlogPost().title,
-                viewModel.getBlogPost().body,
-                viewModel.getBlogPost().image.toUri()
-            )
+            // prep for next fragment
+            viewModel.setUpdatedTitle(viewModel.getBlogPost().title)
+            viewModel.setUpdatedBody(viewModel.getBlogPost().body)
+            viewModel.setUpdatedUri(viewModel.getBlogPost().image.toUri())
             findNavController().navigate(R.id.action_viewBlogFragment_to_updateBlogFragment)
         } catch (e: Exception) {
             Timber.e("Exception: ${e.message}")
@@ -182,20 +199,5 @@ constructor(
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun cancelActiveJobs() {
-        viewModel.cancelActiveJobs()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        val viewState = viewModel.viewState.value
-        viewState?.blogFields?.blogList = ArrayList()
-        outState.putParcelable(
-            BLOG_VIEW_STATE_BUNDLE_KEY,
-            viewState
-        )
-
-        super.onSaveInstanceState(outState)
     }
 }

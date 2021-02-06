@@ -1,7 +1,21 @@
 package com.devlab74.blogx.ui
 
+import com.devlab74.blogx.util.Response
+import com.devlab74.blogx.util.StateMessageCallback
+
 interface UICommunicationListener {
 
-    fun onUIMessageReceived(uiMessage: UIMessage)
+    fun expandAppBar()
+
+    fun hideSoftKeyboard()
+
+    fun isStoragePermissionGranted(): Boolean
+
+    fun onResponseReceived(
+        response: Response,
+        stateMessageCallback: StateMessageCallback
+    )
+
+    fun displayProgressBar(isLoading: Boolean)
 
 }

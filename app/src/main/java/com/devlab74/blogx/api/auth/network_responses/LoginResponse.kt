@@ -20,6 +20,9 @@ class LoginResponse(
     @Json(name = "email")
     var email: String? = null,
 
+    @Json(name = "username")
+    var username: String? = null,
+
     @Json(name = "auth_token")
     var authToken: String? = null
 ) {

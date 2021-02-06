@@ -1,5 +1,7 @@
 package com.devlab74.blogx.api.main.response
 
+import com.devlab74.blogx.models.BlogPost
+import com.devlab74.blogx.util.DateUtils
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -31,4 +33,15 @@ class BlogCreateUpdateResponse(
 
     @Json(name = "username")
     var username: String? = null
-)
+) {
+    fun toBlogPost(): BlogPost {
+        return BlogPost(
+            id = id!!,
+            title = title!!,
+            body = body!!,
+            image = image!!,
+            dateUpdated = DateUtils.convertServerStringDateToLong(dateUpdated!!),
+            username = username!!
+        )
+    }
+}

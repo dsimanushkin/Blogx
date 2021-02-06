@@ -1,6 +1,5 @@
 package com.devlab74.blogx.persistence
 
-import androidx.lifecycle.LiveData
 import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.ORDER_BY_ASC_DATE_UPDATED
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.ORDER_BY_ASC_USERNAME
@@ -22,11 +21,11 @@ class BlogQueryUtils {
     }
 }
 
-fun BlogPostDao.returnOrderedBlogQuery(
+suspend fun BlogPostDao.returnOrderedBlogQuery(
     query: String,
     filterAndOrder: String,
     page: Int
-): LiveData<List<BlogPost>> {
+): List<BlogPost> {
     when{
         filterAndOrder.contains(ORDER_BY_DESC_DATE_UPDATED) ->{
             return searchBlogPostsOrderByDateDESC(

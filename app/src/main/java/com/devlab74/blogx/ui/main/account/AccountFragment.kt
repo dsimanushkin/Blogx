@@ -14,26 +14,25 @@ import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.main.account.state.ACCOUNT_VIEW_STATE_BUNDLE_KEY
 import com.devlab74.blogx.ui.main.account.state.AccountStateEvent
 import com.devlab74.blogx.ui.main.account.state.AccountViewState
+import com.devlab74.blogx.util.StateMessageCallback
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @MainScope
 class AccountFragment
 @Inject
 constructor(
-    private val viewModelFactory: ViewModelProvider.Factory
-): BaseAccountFragment() {
+    viewModelFactory: ViewModelProvider.Factory
+): BaseAccountFragment(viewModelFactory) {
     private var _binding: FragmentAccountBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: AccountViewModel by viewModels {
-        viewModelFactory
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        cancelActiveJobs()
 
         // Restore state after process death
         savedInstanceState?.let { inState ->
@@ -66,33 +65,39 @@ constructor(
         subscribeObservers()
     }
 
-    private fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer {dataState ->
-            if (dataState != null) {
-                stateChangeListener.onDataStateChange(dataState)
-                dataState?.let {
-                    it.data?.let { data ->
-                        data.data?.let { event ->
-                            event.getContentIfNotHandled()?.let { viewState ->
-                                viewState.accountProperties?.let { accountProperties ->
-                                    Timber.d("AccountFragment: DataState: $accountProperties")
-                                    viewModel.setAccountPropertiesData(accountProperties)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        })
-
-        viewModel.viewState.observe(viewLifecycleOwner, Observer {viewState ->
-            viewState?.let {
-                it.accountProperties?.let {
-                    Timber.d("AccountFragment: ViewState: $it")
+    private fun subscribeObservers(){
+        viewModel.viewState.observe(viewLifecycleOwner, Observer{ viewState->
+            if(viewState != null){
+                viewState.accountProperties?.let{
                     setAccountDataFields(it)
                 }
             }
         })
+
+        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer {
+            uiCommunicationListener.displayProgressBar(viewModel.areAnyJobsActive())
+        })
+
+        viewModel.stateMessage.observe(viewLifecycleOwner, Observer { stateMessage ->
+
+            stateMessage?.let {
+                uiCommunicationListener.onResponseReceived(
+                    response = it.response,
+                    stateMessageCallback = object: StateMessageCallback {
+                        override fun removeMessageFromStack() {
+                            viewModel.clearStateMessage()
+                        }
+                    }
+                )
+            }
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.setStateEvent(
+            AccountStateEvent.GetAccountPropertiesEvent()
+        )
     }
 
     private fun setAccountDataFields(accountProperties: AccountProperties) {
@@ -107,33 +112,14 @@ constructor(
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.edit) {
             findNavController().navigate(R.id.action_accountFragment_to_updateAccountFragment)
+            return true
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.setStateEvent(
-            AccountStateEvent.GetAccountPropertiesEvent()
-        )
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun cancelActiveJobs() {
-        viewModel.cancelActiveJobs()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(
-            ACCOUNT_VIEW_STATE_BUNDLE_KEY,
-            viewModel.viewState.value
-        )
-
-        super.onSaveInstanceState(outState)
     }
 }

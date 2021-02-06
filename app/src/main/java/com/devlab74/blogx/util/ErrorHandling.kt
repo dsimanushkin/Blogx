@@ -6,6 +6,12 @@ import com.devlab74.blogx.R
 class ErrorHandling {
     companion object {
 
+        const val NETWORK_ERROR = "Network Error"
+        const val NETWORK_ERROR_TIMEOUT = "Network Timeout"
+        const val CACHE_ERROR_TIMEOUT = "Cache Timeout"
+        const val UNKNOWN_ERROR = "Unknown Error"
+        const val INVALID_STATE_EVENT = "Invalid state event"
+
         fun isNetworkError(msg: String, application: Application): Boolean {
             return when {
                 msg.contains(handleErrors(9002, application)) -> true
@@ -67,6 +73,8 @@ class ErrorHandling {
                 9005 -> application.getString(R.string.generic_error)
                 9006 -> application.getString(R.string.error_save_auth_token)
                 9007 -> application.getString(R.string.error_save_account_properties)
+                9008 -> application.getString(R.string.response_check_previous_auth_user_done)
+                9009 -> application.getString(R.string.generic_success)
 
                 else -> application.getString(R.string.unknown_error)
             }

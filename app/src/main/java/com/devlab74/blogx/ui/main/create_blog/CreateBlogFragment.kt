@@ -17,9 +17,13 @@ import com.devlab74.blogx.ui.*
 import com.devlab74.blogx.ui.main.create_blog.state.CREATE_BLOG_VIEW_STATE_BUNDLE_KEY
 import com.devlab74.blogx.ui.main.create_blog.state.CreateBlogStateEvent
 import com.devlab74.blogx.ui.main.create_blog.state.CreateBlogViewState
+import com.devlab74.blogx.util.*
 import com.devlab74.blogx.util.Constants.Companion.GALLERY_REQUEST_CODE
+import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -27,24 +31,20 @@ import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @MainScope
 class CreateBlogFragment
 @Inject
 constructor(
-    private val viewModelFactory: ViewModelProvider.Factory,
+    viewModelFactory: ViewModelProvider.Factory,
     private val requestManager: RequestManager
-): BaseCreateBlogFragment() {
+): BaseCreateBlogFragment(viewModelFactory) {
     private var _binding: FragmentCreateBlogBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: CreateBlogViewModel by viewModels {
-        viewModelFactory
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        cancelActiveJobs()
 
         // Restore state after process death
         savedInstanceState?.let { inState ->
@@ -68,12 +68,12 @@ constructor(
         setHasOptionsMenu(true)
 
         binding.blogImage.setOnClickListener {
-            if (stateChangeListener.isStoragePermissionGranted()) {
+            if (uiCommunicationListener.isStoragePermissionGranted()) {
                 pickFromGallery()
             }
         }
         binding.updateTextview.setOnClickListener {
-            if (stateChangeListener.isStoragePermissionGranted()) {
+            if (uiCommunicationListener.isStoragePermissionGranted()) {
                 pickFromGallery()
             }
         }
@@ -81,26 +81,20 @@ constructor(
         subscribeObservers()
     }
 
-    private fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            if (dataState != null) {
-                stateChangeListener.onDataStateChange(dataState)
-                dataState.data?.let { data ->
-                    data.response?.let { event ->
-                        event.peekContent().let { response ->
-                            response.message?.let { message ->
-                                if (message == getString(R.string.blog_created_successfully)) {
-                                    viewModel.clearNewBlogFields()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        })
+    // !IMPORTANT!
+    // Must save ViewState b/c in event of process death the LiveData in ViewModel will be lost
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelable(
+            CREATE_BLOG_VIEW_STATE_BUNDLE_KEY,
+            viewModel.viewState.value
+        )
 
+        super.onSaveInstanceState(outState)
+    }
+
+    fun subscribeObservers(){
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.blogFields.let { newBlogFields ->
+            viewState.blogFields.let{ newBlogFields ->
                 setBlogProperties(
                     newBlogFields.newBlogTitle,
                     newBlogFields.newBlogBody,
@@ -108,58 +102,27 @@ constructor(
                 )
             }
         })
-    }
 
-    private fun publishNewBlog() {
-        var multipartBody: MultipartBody.Part? = null
-        viewModel.getNewImageUri()?.let { imageUri ->
-            imageUri.path?.let { filePath ->
-                val imageFile = File(filePath)
-                Timber.d("CreateBlogFragment: imageFile: $imageFile")
-                val requestBody = RequestBody.create(
-                    MediaType.parse("image/jpg"),
-                    imageFile
-                )
-                multipartBody = MultipartBody.Part.createFormData(
-                    "image",
-                    imageFile.name,
-                    requestBody
+        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer { jobCounter ->
+            uiCommunicationListener.displayProgressBar(viewModel.areAnyJobsActive())
+        })
+
+        viewModel.stateMessage.observe(viewLifecycleOwner, Observer { stateMessage ->
+
+            stateMessage?.let {
+                if (it.response.message == handleErrors(4011, activity?.application!!)) {
+                    viewModel.clearNewBlogFields()
+                }
+                uiCommunicationListener.onResponseReceived(
+                    response = it.response,
+                    stateMessageCallback = object: StateMessageCallback {
+                        override fun removeMessageFromStack() {
+                            viewModel.clearStateMessage()
+                        }
+                    }
                 )
             }
-        }
-
-        multipartBody?.let {
-            viewModel.setStateEvent(
-                CreateBlogStateEvent.CreateNewBlogEvent(
-                    binding.blogTitle.text.toString(),
-                    binding.blogBody.text.toString(),
-                    it
-                )
-            )
-
-            stateChangeListener.hideSoftKeyboard()
-        }?: showErrorDialog(getString(R.string.error_must_select_image))
-    }
-
-    private fun setBlogProperties(
-        title: String?,
-        body: String?,
-        image: Uri?
-    ) {
-        image?.let {
-            requestManager
-                .load(image)
-                .into(binding.blogImage)
-        }?: setDefaultImage()
-
-        binding.blogTitle.setText(title)
-        binding.blogBody.setText(body)
-    }
-
-    private fun setDefaultImage() {
-        requestManager
-            .load(R.drawable.default_image)
-            .into(binding.blogImage)
+        })
     }
 
     private fun pickFromGallery() {
@@ -171,29 +134,24 @@ constructor(
         startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
 
-    private fun launchImageCrop(uri: Uri?) {
-        context?.let {
-            CropImage.activity(uri)
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .start(it, this)
+    private fun setBlogProperties(
+        title: String? = "",
+        body: String? = "",
+        image: Uri?
+    ) {
+        if(image != null){
+            requestManager
+                .load(image)
+                .into(binding.blogImage)
         }
-    }
+        else{
+            requestManager
+                .load(R.drawable.default_image)
+                .into(binding.blogImage)
+        }
 
-    private fun showErrorDialog(errorMessage: String) {
-        stateChangeListener.onDataStateChange(
-            DataState(
-                Event(
-                    StateError(
-                        Response(
-                            errorMessage,
-                            ResponseType.Dialog()
-                        )
-                    )
-                ),
-                Loading(false),
-                Data(Event.dataEvent(null), null)
-            )
-        )
+        binding.blogTitle.setText(title)
+        binding.blogBody.setText(body)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -223,6 +181,64 @@ constructor(
         }
     }
 
+    private fun launchImageCrop(uri: Uri?) {
+        context?.let {
+            CropImage.activity(uri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(it, this)
+        }
+    }
+
+    private fun publishNewBlog(){
+        var multipartBody: MultipartBody.Part? = null
+        viewModel.viewState.value?.blogFields?.newImageUri?.let{ imageUri ->
+            imageUri.path?.let{filePath ->
+                val imageFile = File(filePath)
+                Timber.d("CreateBlogFragment, imageFile: file: $imageFile")
+                val requestBody =
+                    RequestBody.create(
+                        MediaType.parse("image/jpg"),
+                        imageFile
+                    )
+                // name = field name in serializer
+                // filename = name of the image file
+                // requestBody = file with file type information
+                multipartBody = MultipartBody.Part.createFormData(
+                    "image",
+                    imageFile.name,
+                    requestBody
+                )
+            }
+        }
+
+        multipartBody?.let {
+            viewModel.setStateEvent(
+                CreateBlogStateEvent.CreateNewBlogEvent(
+                    binding.blogTitle.text.toString(),
+                    binding.blogBody.text.toString(),
+                    it
+                )
+            )
+            uiCommunicationListener.hideSoftKeyboard()
+        }?: showErrorDialog(getString(R.string.error_must_select_image))
+
+    }
+
+    fun showErrorDialog(errorMessage: String){
+        uiCommunicationListener.onResponseReceived(
+            response = Response(
+                message = errorMessage,
+                uiComponentType = UIComponentType.Dialog(),
+                messageType = MessageType.Error()
+            ),
+            stateMessageCallback = object: StateMessageCallback{
+                override fun removeMessageFromStack() {
+                    viewModel.clearStateMessage()
+                }
+            }
+        )
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.publish_menu, menu)
     }
@@ -238,12 +254,19 @@ constructor(
                     // Ignore
                 }
             }
-            uiCommunicationListener.onUIMessageReceived(
-                UIMessage(
-                    getString(R.string.are_you_sure_publish),
-                    UIMessageType.AreYouSureDialog(callback)
-                )
+            uiCommunicationListener.onResponseReceived(
+                response = Response(
+                    message = getString(R.string.are_you_sure_publish),
+                    uiComponentType = UIComponentType.AreYouSureDialog(callback),
+                    messageType = MessageType.Info()
+                ),
+                stateMessageCallback = object: StateMessageCallback{
+                    override fun removeMessageFromStack() {
+                        viewModel.clearStateMessage()
+                    }
+                }
             )
+            return true
         }
 
         return super.onOptionsItemSelected(item)
@@ -261,18 +284,5 @@ constructor(
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun cancelActiveJobs() {
-        viewModel.cancelActiveJobs()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(
-            CREATE_BLOG_VIEW_STATE_BUNDLE_KEY,
-            viewModel.viewState.value
-        )
-
-        super.onSaveInstanceState(outState)
     }
 }

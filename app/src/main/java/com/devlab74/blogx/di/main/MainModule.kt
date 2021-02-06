@@ -1,18 +1,19 @@
 package com.devlab74.blogx.di.main
 
 import android.app.Application
+import android.content.SharedPreferences
 import com.devlab74.blogx.api.main.BlogxMainService
 import com.devlab74.blogx.persistence.AccountPropertiesDao
 import com.devlab74.blogx.persistence.AppDatabase
 import com.devlab74.blogx.persistence.BlogPostDao
-import com.devlab74.blogx.repository.main.AccountRepository
-import com.devlab74.blogx.repository.main.BlogRepository
-import com.devlab74.blogx.repository.main.CreateBlogRepository
+import com.devlab74.blogx.repository.main.*
 import com.devlab74.blogx.session.SessionManager
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.FlowPreview
 import retrofit2.Retrofit
 
+@FlowPreview
 @Module
 object MainModule {
 
@@ -32,13 +33,15 @@ object MainModule {
         application: Application,
         blogxMainService: BlogxMainService,
         accountPropertiesDao: AccountPropertiesDao,
-        sessionManager: SessionManager
+        sessionManager: SessionManager,
+        editor: SharedPreferences.Editor
     ): AccountRepository {
-        return AccountRepository(
+        return AccountRepositoryImpl(
             application,
             blogxMainService,
             accountPropertiesDao,
-            sessionManager
+            sessionManager,
+            editor
         )
     }
 
@@ -58,7 +61,7 @@ object MainModule {
         blogPostDao: BlogPostDao,
         sessionManager: SessionManager
     ): BlogRepository {
-        return BlogRepository(
+        return BlogRepositoryImpl(
             application,
             blogxMainService,
             blogPostDao,
@@ -75,7 +78,7 @@ object MainModule {
         blogPostDao: BlogPostDao,
         sessionManager: SessionManager
     ): CreateBlogRepository {
-        return CreateBlogRepository(
+        return CreateBlogRepositoryImpl(
             application,
             blogxMainService,
             blogPostDao,

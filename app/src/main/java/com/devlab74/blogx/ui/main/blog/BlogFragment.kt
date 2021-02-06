@@ -18,7 +18,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.request.RequestOptions
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentBlogBinding
 import com.devlab74.blogx.databinding.LayoutBlogFilterBinding
@@ -27,42 +29,42 @@ import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_DATE_UPDATED
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_USERNAME
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_ORDER_ASC
-import com.devlab74.blogx.ui.DataState
+import com.devlab74.blogx.util.DataState
 import com.devlab74.blogx.ui.main.blog.state.BLOG_VIEW_STATE_BUNDLE_KEY
-import com.devlab74.blogx.ui.main.blog.state.BlogStateEvent
 import com.devlab74.blogx.ui.main.blog.state.BlogViewState
 import com.devlab74.blogx.ui.main.blog.viewmodels.*
-import com.devlab74.blogx.util.ErrorHandling
+import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
+import com.devlab74.blogx.util.StateMessageCallback
 import com.devlab74.blogx.util.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.layout_blog_filter.view.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @MainScope
 class BlogFragment
 @Inject
 constructor(
-    private val viewModelFactory: ViewModelProvider.Factory,
-    private val requestManager: RequestManager
-): BaseBlogFragment(),
+    viewModelFactory: ViewModelProvider.Factory,
+    private val requestOptions: RequestOptions
+): BaseBlogFragment(viewModelFactory),
     BlogListAdapter.Interaction,
     SwipeRefreshLayout.OnRefreshListener
 {
     private var _binding: FragmentBlogBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: BlogViewModel by viewModels {
-        viewModelFactory
-    }
-
     private lateinit var recyclerAdapter: BlogListAdapter
 
     private lateinit var searchView: SearchView
 
+    private var requestManager: RequestManager? = null // can leak memory, must be nullable
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        cancelActiveJobs()
 
         // Restore state after process death
         savedInstanceState?.let { inState ->
@@ -70,6 +72,19 @@ constructor(
                 viewModel.setViewState(viewState)
             }
         }
+    }
+
+    // !IMPORTANT!
+    // Must save ViewState b/c in event of process death the LiveData in ViewModel will be lost
+    override fun onSaveInstanceState(outState: Bundle) {
+        val viewState = viewModel.viewState.value
+        viewState?.blogFields?.blogList = ArrayList()
+        outState.putParcelable(
+            BLOG_VIEW_STATE_BUNDLE_KEY,
+            viewState
+        )
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onCreateView(
@@ -87,72 +102,54 @@ constructor(
         setHasOptionsMenu(true)
         binding.swipeRefresh.setOnRefreshListener(this)
 
+        setupGlide()
         initRecyclerView()
         subscribeObservers()
     }
 
-    private fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            if (dataState != null) {
-                handlePagination(dataState)
-                stateChangeListener.onDataStateChange(dataState)
-            }
-        })
-
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            Timber.d("BlogFragment: ViewState $viewState")
-            if (viewState != null) {
+    private fun subscribeObservers(){
+        viewModel.viewState.observe(viewLifecycleOwner, Observer{ viewState ->
+            if(viewState != null){
                 recyclerAdapter.apply {
-                    preloadGlideImages(
-                        requestManager,
-                        viewState.blogFields.blogList
-                    )
+                    viewState.blogFields.blogList?.let {
+                        preloadGlideImages(
+                            requestManager = requestManager as RequestManager,
+                            list = it
+                        )
+                    }
 
-                    submitList(
-                        list = viewState.blogFields.blogList,
-                        isQueryExhausted = viewState.blogFields.isQueryExhausted
-                    )
-                }
-            }
-        })
-    }
-
-    private fun handlePagination(dataState: DataState<BlogViewState>) {
-        // Handle incoming data from DataState
-        dataState.data?.let {
-            it.data?.let {
-                it.getContentIfNotHandled()?.let {
-                    viewModel.handleIncomingBlogListData(it)
-                }
-            }
-        }
-    }
-
-    private fun initRecyclerView() {
-        binding.blogPostRecyclerview.apply {
-            layoutManager = LinearLayoutManager(this@BlogFragment.context)
-            val topSpacingItemDecoration = TopSpacingItemDecoration(30)
-            removeItemDecoration(topSpacingItemDecoration)
-            addItemDecoration(topSpacingItemDecoration)
-
-            recyclerAdapter = BlogListAdapter(
-                requestManager = requestManager,
-                interaction = this@BlogFragment
-            )
-
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                    val lastPosition = layoutManager.findLastVisibleItemPosition()
-                    if (lastPosition == recyclerAdapter.itemCount.minus(1)) {
-                        Timber.d("BlogFragment: attempting to load next page")
-                        viewModel.nextPage()
+                    viewState.blogFields.blogList?.let {
+                        submitList(
+                            blogList = it,
+                            isQueryExhausted = viewState.blogFields.isQueryExhausted?: true
+                        )
                     }
                 }
-            })
-            adapter = recyclerAdapter
-        }
+
+            }
+        })
+
+        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer {
+            uiCommunicationListener.displayProgressBar(viewModel.areAnyJobsActive())
+        })
+
+        viewModel.stateMessage.observe(viewLifecycleOwner, Observer { stateMessage ->
+            stateMessage?.let {
+                if(stateMessage.response.message!!.contains("Invalid page.")){
+                    viewModel.setQueryExhausted(true)
+                    viewModel.clearStateMessage()
+                }else{
+                    uiCommunicationListener.onResponseReceived(
+                        response = it.response,
+                        stateMessageCallback = object: StateMessageCallback {
+                            override fun removeMessageFromStack() {
+                                viewModel.clearStateMessage()
+                            }
+                        }
+                    )
+                }
+            }
+        })
     }
 
     private fun initSearchView(menu: Menu) {
@@ -189,6 +186,50 @@ constructor(
     private fun onBlogSearchOrFilter() {
         viewModel.loadFirstPage().let {
             resetUI()
+        }
+    }
+
+    private fun resetUI() {
+        binding.blogPostRecyclerview.smoothScrollToPosition(0)
+        uiCommunicationListener.hideSoftKeyboard()
+        binding.focusableView.requestFocus()
+    }
+
+    private fun initRecyclerView() {
+        binding.blogPostRecyclerview.apply {
+            layoutManager = LinearLayoutManager(this@BlogFragment.context)
+            val topSpacingItemDecoration = TopSpacingItemDecoration(30)
+            removeItemDecoration(topSpacingItemDecoration) // Does nothing if not applied already
+            addItemDecoration(topSpacingItemDecoration)
+
+            recyclerAdapter = BlogListAdapter(
+                requestManager = requestManager as RequestManager,
+                interaction = this@BlogFragment
+            )
+
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val lastPosition = layoutManager.findLastVisibleItemPosition()
+                    if (lastPosition == recyclerAdapter.itemCount.minus(1)) {
+                        Timber.d("BlogFragment: attempting to load next page")
+                        viewModel.nextPage()
+                    }
+                }
+            })
+            adapter = recyclerAdapter
+        }
+    }
+
+    private fun setupGlide(){
+        val requestOptions = RequestOptions
+            .placeholderOf(R.drawable.default_image)
+            .error(R.drawable.default_image)
+
+        activity?.let {
+            requestManager = Glide.with(it)
+                .applyDefaultRequestOptions(requestOptions)
         }
     }
 
@@ -241,11 +282,14 @@ constructor(
                     Timber.d("FilterDialog: changing order. ${selectedOrder.text}")
                     order = "-"
                 }
+
                 viewModel.saveFilterOptions(filter, order).let {
                     viewModel.setBlogFilter(filter)
                     viewModel.setBlogOrder(order)
-                    onBlogSearchOrFilter()
                 }
+
+                onBlogSearchOrFilter()
+
                 dialog.dismiss()
             }
 
@@ -257,16 +301,9 @@ constructor(
         }
     }
 
-    private fun resetUI() {
-        binding.blogPostRecyclerview.smoothScrollToPosition(0)
-        stateChangeListener.hideSoftKeyboard()
-        binding.focusableView.requestFocus()
-    }
-
-    private fun saveLayoutManagerState() {
-        binding.blogPostRecyclerview.layoutManager?.onSaveInstanceState()?.let { lmState ->
-            viewModel.setLayoutManagerState(lmState)
-        }
+    override fun onRefresh() {
+        onBlogSearchOrFilter()
+        binding.swipeRefresh.isRefreshing = false
     }
 
     override fun restoreListPosition() {
@@ -275,9 +312,10 @@ constructor(
         }
     }
 
-    override fun onRefresh() {
-        onBlogSearchOrFilter()
-        binding.swipeRefresh.isRefreshing = false
+    override fun onItemSelected(position: Int, item: BlogPost) {
+        Timber.d("onItemSelected: position, BlogPost: $position, $item")
+        viewModel.setBlogPost(item)
+        findNavController().navigate(R.id.action_blogFragment_to_viewBlogFragment)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -294,10 +332,10 @@ constructor(
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onItemSelected(position: Int, item: BlogPost) {
-        Timber.d("onItemSelected: position, BlogPost: $position, $item")
-        viewModel.setBlogPost(item)
-        findNavController().navigate(R.id.action_blogFragment_to_viewBlogFragment)
+    private fun saveLayoutManagerState() {
+        binding.blogPostRecyclerview.layoutManager?.onSaveInstanceState()?.let { lmState ->
+            viewModel.setLayoutManagerState(lmState)
+        }
     }
 
     override fun onResume() {
@@ -314,20 +352,5 @@ constructor(
         super.onDestroyView()
         binding.blogPostRecyclerview.adapter = null // Clear references (Can leak memory)
         _binding = null
-    }
-
-    override fun cancelActiveJobs() {
-        viewModel.cancelActiveJobs()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        val viewState = viewModel.viewState.value
-        viewState?.blogFields?.blogList = ArrayList()
-        outState.putParcelable(
-            BLOG_VIEW_STATE_BUNDLE_KEY,
-            viewState
-        )
-
-        super.onSaveInstanceState(outState)
     }
 }

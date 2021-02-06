@@ -10,10 +10,10 @@ import com.devlab74.blogx.models.AuthToken
 interface AuthTokenDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(authToken: AuthToken): Long
+    suspend fun insert(authToken: AuthToken): Long
 
     @Query("UPDATE auth_token SET auth_token = null WHERE account_id = :id")
-    fun nullifyToken(id: String): Int
+    suspend fun nullifyToken(id: String): Int
 
     @Query("SELECT * FROM auth_token WHERE account_id = :id")
     suspend fun searchById(id: String): AuthToken?

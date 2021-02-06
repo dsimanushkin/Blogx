@@ -11,27 +11,22 @@ import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentLauncherBinding
 import com.devlab74.blogx.di.auth.AuthScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @AuthScope
 class LauncherFragment
 @Inject
 constructor(
-    private val viewModelFactory: ViewModelProvider.Factory
-): Fragment() {
+    viewModelFactory: ViewModelProvider.Factory
+): BaseAuthFragment(viewModelFactory) {
 
     private var _binding: FragmentLauncherBinding? = null
     private val binding get() = _binding!!
-
-    val viewModel: AuthViewModel by viewModels {
-        viewModelFactory
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.cancelActiveJobs()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +49,7 @@ constructor(
             navForgotPassword()
         }
 
-        Timber.d("LauncherFragment: ${viewModel.hashCode()}")
+        binding.focusableView.requestFocus()
     }
 
     private fun navLogin() {

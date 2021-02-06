@@ -2,43 +2,43 @@ package com.devlab74.blogx.ui.main.blog.viewmodels
 
 import android.net.Uri
 import com.devlab74.blogx.models.BlogPost
+import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_DATE_UPDATED
+import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_ORDER_DESC
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getSearchQuery(): String {
-    getCurrentViewStateOrNew().let {
-        return it.blogFields.searchQuery
-    }
+    return getCurrentViewStateOrNew().blogFields.searchQuery?: return ""
 }
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getPage(): Int {
-    getCurrentViewStateOrNew().let {
-        return it.blogFields.page
-    }
+    return getCurrentViewStateOrNew().blogFields.page?: return 1
 }
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getIsQueryExhausted(): Boolean {
-    getCurrentViewStateOrNew().let {
-        return it.blogFields.isQueryExhausted
-    }
+    return getCurrentViewStateOrNew().blogFields.isQueryExhausted?: false
 }
 
-fun BlogViewModel.getIsQueryInProgress(): Boolean {
-    getCurrentViewStateOrNew().let {
-        return it.blogFields.isQueryInProgress
-    }
-}
-
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getFilter(): String {
-    getCurrentViewStateOrNew().let {
-        return it.blogFields.filter
-    }
+    return getCurrentViewStateOrNew().blogFields.filter?: BLOG_FILTER_DATE_UPDATED
 }
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getOrder(): String {
-    getCurrentViewStateOrNew().let {
-        return it.blogFields.order
-    }
+    return getCurrentViewStateOrNew().blogFields.order?: BLOG_ORDER_DESC
 }
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getBlogId(): String {
     getCurrentViewStateOrNew().let {
         it.viewBlogFields.blogPost?.let { blogPost ->
@@ -48,12 +48,14 @@ fun BlogViewModel.getBlogId(): String {
     }
 }
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.isAuthorOfBlogPost(): Boolean {
-    getCurrentViewStateOrNew().let {
-        return it.viewBlogFields.isAuthorOfBlogPost
-    }
+    return getCurrentViewStateOrNew().viewBlogFields.isAuthorOfBlogPost?: false
 }
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getBlogPost(): BlogPost {
     getCurrentViewStateOrNew().let {
         return it.viewBlogFields.blogPost?.let { blogPost ->
@@ -62,23 +64,19 @@ fun BlogViewModel.getBlogPost(): BlogPost {
     }
 }
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getDummyBlogPost(): BlogPost {
     return BlogPost("null", "", "", "", 1, "")
 }
 
+@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getUpdatedBlogUri(): Uri? {
     getCurrentViewStateOrNew().let {
-        it.updatedBlogFields.updateImageUri?.let {
+        it.updatedBlogFields.updatedImageUri?.let {
             return it
         }
     }
     return null
-}
-
-fun BlogViewModel.getUpdatedImageUri(): Uri? {
-    getCurrentViewStateOrNew().let {
-        it.updatedBlogFields.let {
-            return it.updateImageUri
-        }
-    }
 }

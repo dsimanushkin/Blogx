@@ -15,20 +15,21 @@ import com.devlab74.blogx.models.AUTH_TOKEN_BUNDLE_KEY
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.ui.BaseActivity
 import com.devlab74.blogx.ui.auth.AuthActivity
-import com.devlab74.blogx.ui.main.account.BaseAccountFragment
 import com.devlab74.blogx.ui.main.account.ChangePasswordFragment
 import com.devlab74.blogx.ui.main.account.UpdateAccountFragment
-import com.devlab74.blogx.ui.main.blog.BaseBlogFragment
 import com.devlab74.blogx.ui.main.blog.UpdateBlogFragment
 import com.devlab74.blogx.ui.main.blog.ViewBlogFragment
-import com.devlab74.blogx.ui.main.create_blog.BaseCreateBlogFragment
 import com.devlab74.blogx.util.BOTTOM_NAV_BACKSTACK_KEY
 import com.devlab74.blogx.util.BottomNavController
 import com.devlab74.blogx.util.setUpNavigation
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 class MainActivity: BaseActivity(),
     BottomNavController.OnNavigationGraphChanged,
     BottomNavController.OnNavigationReselectedListener
@@ -61,6 +62,7 @@ class MainActivity: BaseActivity(),
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        inject()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -68,9 +70,12 @@ class MainActivity: BaseActivity(),
         setupActionBar()
         setupBottomNavigationView(savedInstanceState)
 
-        subscribeObservers()
-
         restoreSession(savedInstanceState)
+        subscribeObservers()
+    }
+
+    override fun onGraphChange() {
+        expandAppBar()
     }
 
     private fun subscribeObservers() {
@@ -78,6 +83,7 @@ class MainActivity: BaseActivity(),
             Timber.d("MainActivity: subscribeObservers: AuthToken: $authToken")
             if (authToken == null || authToken.accountId == "" || authToken.authToken == null) {
                 navAuthActivity()
+                finish()
             }
         })
     }
@@ -97,32 +103,6 @@ class MainActivity: BaseActivity(),
         }
     }
 
-    override fun onGraphChange() {
-        expandAppBar()
-        cancelActiveJobs()
-    }
-
-    override fun expandAppBar() {
-        binding.appBar.setExpanded(true)
-    }
-
-    private fun cancelActiveJobs() {
-        val fragments = bottomNavController.fragmentManager
-            .findFragmentById(bottomNavController.containerId)
-            ?.childFragmentManager
-            ?.fragments
-        if (fragments != null) {
-            for (fragment in fragments) {
-                when(fragment) {
-                    is BaseAccountFragment -> fragment.cancelActiveJobs()
-                    is BaseBlogFragment -> fragment.cancelActiveJobs()
-                    is BaseCreateBlogFragment -> fragment.cancelActiveJobs()
-                }
-            }
-        }
-        displayProgressBar(false)
-    }
-
     override fun onReselectNavItem(navController: NavController, fragment: Fragment) = when(fragment) {
         is ViewBlogFragment -> navController.navigate(R.id.action_viewBlogFragment_to_blogFragment)
         is UpdateBlogFragment -> navController.navigate(R.id.action_updateBlogFragment_to_blogFragment)
@@ -133,10 +113,6 @@ class MainActivity: BaseActivity(),
         }
     }
 
-    private fun setupActionBar() {
-        setSupportActionBar(binding.toolBar)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()
@@ -145,7 +121,16 @@ class MainActivity: BaseActivity(),
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onBackPressed() = bottomNavController.onBackPressed()
+    private fun restoreSession(savedInstanceState: Bundle?){
+        savedInstanceState?.get(AUTH_TOKEN_BUNDLE_KEY)?.let{ authToken ->
+            Timber.d("restoreSession: Restoring token: $authToken")
+            sessionManager.setValue(authToken as AuthToken)
+        }
+    }
+
+    override fun expandAppBar() {
+        binding.appBar.setExpanded(true)
+    }
 
     private fun navAuthActivity() {
         val intent = Intent(this, AuthActivity::class.java)
@@ -154,21 +139,19 @@ class MainActivity: BaseActivity(),
         (application as BaseApplication).releaseMainComponent()
     }
 
-    override fun displayProgressBar(bool: Boolean) {
-        if (bool) {
+    override fun displayProgressBar(isLoading: Boolean) {
+        if (isLoading) {
             binding.progressBar.visibility = View.VISIBLE
         } else {
             binding.progressBar.visibility = View.INVISIBLE
         }
     }
 
-    private fun restoreSession(savedInstanceState: Bundle?) {
-        savedInstanceState?.let {inState ->
-            inState[AUTH_TOKEN_BUNDLE_KEY]?.let { authToken ->
-                sessionManager.setValue(authToken as AuthToken)
-            }
-        }
+    private fun setupActionBar() {
+        setSupportActionBar(binding.toolBar)
     }
+
+    override fun onBackPressed() = bottomNavController.onBackPressed()
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(

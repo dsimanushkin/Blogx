@@ -14,26 +14,25 @@ import com.devlab74.blogx.ui.main.account.state.ACCOUNT_VIEW_STATE_BUNDLE_KEY
 import com.devlab74.blogx.ui.main.account.state.AccountStateEvent
 import com.devlab74.blogx.ui.main.account.state.AccountViewState
 import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
+import com.devlab74.blogx.util.StateMessageCallback
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @MainScope
 class ChangePasswordFragment
 @Inject
 constructor(
-    private val viewModelFactory: ViewModelProvider.Factory
-): BaseAccountFragment() {
+    viewModelFactory: ViewModelProvider.Factory
+): BaseAccountFragment(viewModelFactory) {
     private var _binding: FragmentChangePasswordBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: AccountViewModel by viewModels {
-        viewModelFactory
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        cancelActiveJobs()
 
         // Restore state after process death
         savedInstanceState?.let { inState ->
@@ -68,21 +67,28 @@ constructor(
         subscribeObservers()
     }
 
-    private fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            if (dataState != null) {
-                stateChangeListener.onDataStateChange(dataState)
-                Timber.d("ChangePasswordFragment: DataState: $dataState")
-                if (dataState != null) {
-                    dataState.data?.let { data ->
-                        data.response?.let { event ->
-                            if (event.peekContent().message == handleErrors(3006, activity?.application!!)) {
-                                stateChangeListener.hideSoftKeyboard()
-                                findNavController().popBackStack()
-                            }
+    private fun subscribeObservers(){
+        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer { jobCounter ->
+            uiCommunicationListener.displayProgressBar(viewModel.areAnyJobsActive())
+        })
+
+        viewModel.stateMessage.observe(viewLifecycleOwner, Observer { stateMessage ->
+
+            stateMessage?.let {
+
+                if(stateMessage.response.message == handleErrors(3006, activity?.application!!)){
+                    uiCommunicationListener.hideSoftKeyboard()
+                    findNavController().popBackStack()
+                }
+
+                uiCommunicationListener.onResponseReceived(
+                    response = it.response,
+                    stateMessageCallback = object: StateMessageCallback {
+                        override fun removeMessageFromStack() {
+                            viewModel.clearStateMessage()
                         }
                     }
-                }
+                )
             }
         })
     }
@@ -90,18 +96,5 @@ constructor(
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun cancelActiveJobs() {
-        viewModel.cancelActiveJobs()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(
-            ACCOUNT_VIEW_STATE_BUNDLE_KEY,
-            viewModel.viewState.value
-        )
-
-        super.onSaveInstanceState(outState)
     }
 }

@@ -14,16 +14,18 @@ import com.devlab74.blogx.fragments.auth.AuthNavHostFragment
 import com.devlab74.blogx.ui.BaseActivity
 import com.devlab74.blogx.ui.auth.state.AuthStateEvent
 import com.devlab74.blogx.ui.main.MainActivity
-import com.devlab74.blogx.viewmodels.AuthViewModelFactory
+import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
+import com.devlab74.blogx.util.StateMessageCallback
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 class AuthActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAuthBinding
-
-    @Inject
-    lateinit var factoryAuth: AuthViewModelFactory
 
     @Inject
     lateinit var fragmentFactory: FragmentFactory
@@ -40,6 +42,7 @@ class AuthActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        inject()
         super.onCreate(savedInstanceState)
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -66,30 +69,42 @@ class AuthActivity : BaseActivity() {
     }
 
     private fun subscribeObservers() {
-        viewModel.dataState.observe(this, Observer { dataState ->
-            onDataStateChange(dataState)
-            dataState.data?.let { data ->
-                data.data?.let { event ->
-                    event.getContentIfNotHandled()?.let {
-                        it.authToken?.let {
-                            Timber.d("AuthActivity: DataState: $it")
-                            viewModel.setAuthToken(it)
-                        }
-                    }
-                }
-            }
-        })
-
-        viewModel.viewState.observe(this, Observer {
-            it.authToken?.let {
+        viewModel.viewState.observe(this, Observer{ viewState ->
+            Timber.d("AuthActivity, subscribeObservers: AuthViewState: $viewState")
+            viewState.authToken?.let{
                 sessionManager.login(it)
             }
         })
 
-        sessionManager.cachedToken.observe(this, Observer { authToken ->
-            Timber.d("AuthActivity: subscribeObservers: AuthToken: $authToken")
-            if (authToken != null && authToken.accountId != "" && authToken.authToken != null) {
-                navMainActivity()
+        viewModel.numActiveJobs.observe(this, Observer {
+            displayProgressBar(viewModel.areAnyJobsActive())
+        })
+
+        viewModel.stateMessage.observe(this, Observer { stateMessage ->
+
+            stateMessage?.let {
+
+                if(stateMessage.response.message == handleErrors(9008, application)){
+                    onFinishCheckPreviousAuthUser()
+                }
+
+                onResponseReceived(
+                    response = it.response,
+                    stateMessageCallback = object: StateMessageCallback {
+                        override fun removeMessageFromStack() {
+                            viewModel.clearStateMessage()
+                        }
+                    }
+                )
+            }
+        })
+
+        sessionManager.cachedToken.observe(this, Observer{ token ->
+            Timber.d("Auth Token: token: $token")
+            token.let{ authToken ->
+                if(authToken != null && authToken.accountId != "" && authToken.authToken != null){
+                    navMainActivity()
+                }
             }
         })
     }
@@ -109,8 +124,8 @@ class AuthActivity : BaseActivity() {
         // Ignore it
     }
 
-    override fun displayProgressBar(bool: Boolean) {
-        if (bool) {
+    override fun displayProgressBar(isLoading: Boolean) {
+        if (isLoading) {
             binding.progressBar.visibility = View.VISIBLE
         } else {
             binding.progressBar.visibility = View.INVISIBLE
@@ -120,5 +135,10 @@ class AuthActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         checkPreviousAuthUser()
+    }
+
+    private fun onFinishCheckPreviousAuthUser(){
+        binding.fragmentContainer.visibility = View.VISIBLE
+        binding.splashLogo.visibility = View.INVISIBLE
     }
 }

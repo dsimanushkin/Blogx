@@ -1,42 +1,30 @@
 package com.devlab74.blogx.ui.auth
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.devlab74.blogx.databinding.FragmentLoginBinding
 import com.devlab74.blogx.di.auth.AuthScope
-import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.ui.auth.state.AuthStateEvent
 import com.devlab74.blogx.ui.auth.state.LoginFields
-import com.devlab74.blogx.util.ApiEmptyResponse
-import com.devlab74.blogx.util.ApiErrorResponse
-import com.devlab74.blogx.util.ApiSuccessResponse
-import timber.log.Timber
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @AuthScope
 class LoginFragment
 @Inject
 constructor(
-    private val viewModelFactory: ViewModelProvider.Factory
-): Fragment() {
+    viewModelFactory: ViewModelProvider.Factory
+): BaseAuthFragment(viewModelFactory) {
 
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-
-    val viewModel: AuthViewModel by viewModels {
-        viewModelFactory
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.cancelActiveJobs()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,16 +37,26 @@ constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        subscribeObservers()
+
         binding.loginButton.setOnClickListener {
             login()
         }
-
-        subscribeObservers()
     }
 
     private fun login() {
+        saveLoginFields()
         viewModel.setStateEvent(
             AuthStateEvent.LoginAttemptEvent(
+                binding.inputUsername.text.toString(),
+                binding.inputPassword.text.toString()
+            )
+        )
+    }
+
+    private fun saveLoginFields(){
+        viewModel.setLoginFields(
+            LoginFields(
                 binding.inputUsername.text.toString(),
                 binding.inputPassword.text.toString()
             )
@@ -80,12 +78,7 @@ constructor(
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.setLoginFields(
-            LoginFields(
-                binding.inputUsername.text.toString(),
-                binding.inputPassword.text.toString()
-            )
-        )
+        saveLoginFields()
         _binding = null
     }
 }

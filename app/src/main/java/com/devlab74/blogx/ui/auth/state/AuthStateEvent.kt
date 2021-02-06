@@ -1,20 +1,54 @@
 package com.devlab74.blogx.ui.auth.state
 
-sealed class AuthStateEvent {
+import com.devlab74.blogx.util.StateEvent
+
+sealed class AuthStateEvent: StateEvent {
 
     data class LoginAttemptEvent(
         val username: String,
         val password: String
-    ): AuthStateEvent()
+    ): AuthStateEvent() {
+        override fun errorInfo(): String {
+            return "Login attempt failed."
+        }
+
+        override fun toString(): String {
+            return "AuthStateEvent"
+        }
+    }
 
     data class RegisterAttemptEvent(
         val email: String,
         val username: String,
         val password: String,
         val confirmPassword: String
-    ): AuthStateEvent()
+    ): AuthStateEvent() {
+        override fun errorInfo(): String {
+            return "Register attempt failed."
+        }
 
-    class CheckPreviousAuthEvent: AuthStateEvent()
+        override fun toString(): String {
+            return "RegisterAttemptEvent"
+        }
+    }
 
-    class None(): AuthStateEvent()
+    class CheckPreviousAuthEvent: AuthStateEvent() {
+        override fun errorInfo(): String {
+            return "Error checking for previously authenticated user."
+        }
+
+        override fun toString(): String {
+            return "CheckPreviousAuthEvent"
+        }
+    }
+
+    class None(): AuthStateEvent() {
+        override fun errorInfo(): String {
+            return "None"
+        }
+
+        override fun toString(): String {
+            return "None"
+        }
+    }
 }

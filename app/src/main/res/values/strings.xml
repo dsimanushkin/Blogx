@@ -141,8 +141,11 @@
     <string name="error_check_network_connection">Check network connection.</string>
 
     <string name="generic_error">Error</string>
+    <string name="generic_success">Success</string>
     <string name="error_save_auth_token">Error saving authentication token.\nTry restarting the app.</string>
     <string name="error_save_account_properties">Error saving account properties.\nTry restarting the app.</string>
+    <string name="response_check_previous_auth_user_done">Done checking for previously authenticated user.</string>
+    <string name="something_wrong_with_image">Something wrong with image.</string>
 
     <string name="unknown_error">Unknown Error</string>
     <string name="blog_filter_apply_button">Apply</string>

@@ -13,15 +13,12 @@ import com.devlab74.blogx.persistence.AppDatabase
 import com.devlab74.blogx.persistence.AppDatabase.Companion.DATABASE_NAME
 import com.devlab74.blogx.persistence.AuthTokenDao
 import com.devlab74.blogx.util.Constants.Companion.BASE_URL
-import com.devlab74.blogx.util.LiveDataCallAdapterFactory
 import com.devlab74.blogx.util.PreferenceKeys
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.*
 import javax.inject.Singleton
 
 @Module
@@ -74,7 +71,6 @@ object AppModule {
     fun provideRetrofitBuilder(): Retrofit.Builder {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addCallAdapterFactory(LiveDataCallAdapterFactory())
             .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
     }
 

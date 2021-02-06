@@ -12,30 +12,21 @@ import com.devlab74.blogx.databinding.FragmentRegisterBinding
 import com.devlab74.blogx.di.auth.AuthScope
 import com.devlab74.blogx.ui.auth.state.AuthStateEvent
 import com.devlab74.blogx.ui.auth.state.RegistrationFields
-import com.devlab74.blogx.util.ApiEmptyResponse
-import com.devlab74.blogx.util.ApiErrorResponse
-import com.devlab74.blogx.util.ApiSuccessResponse
-import timber.log.Timber
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @AuthScope
 class RegisterFragment
 @Inject
 constructor(
-    private val viewModelFactory: ViewModelProvider.Factory
-): Fragment() {
+    viewModelFactory: ViewModelProvider.Factory
+): BaseAuthFragment(viewModelFactory) {
 
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
-
-    val viewModel: AuthViewModel by viewModels {
-        viewModelFactory
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.cancelActiveJobs()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,8 +58,8 @@ constructor(
     }
 
     private fun subscribeObservers() {
-        viewModel.viewState.observe(viewLifecycleOwner, Observer {
-            it.registrationFields?.let { registrationFields ->
+        viewModel.viewState.observe(viewLifecycleOwner, Observer {viewState ->
+            viewState.registrationFields?.let { registrationFields ->
                 registrationFields.registrationEmail?.let {
                     binding.inputEmail.setText(it)
                 }
@@ -85,8 +76,8 @@ constructor(
         })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         viewModel.setRegistrationFields(
             RegistrationFields(
                 binding.inputEmail.text.toString(),
