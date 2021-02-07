@@ -1,11 +1,9 @@
 package com.devlab74.blogx.ui.auth
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
@@ -13,7 +11,6 @@ import com.devlab74.blogx.databinding.FragmentLauncherBinding
 import com.devlab74.blogx.di.auth.AuthScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import timber.log.Timber
 import javax.inject.Inject
 
 @FlowPreview

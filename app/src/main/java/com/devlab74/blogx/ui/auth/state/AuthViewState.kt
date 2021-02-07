@@ -20,7 +20,7 @@ data class RegistrationFields(
     var registrationPassword: String? = null,
     var registrationConfirmPassword: String? = null
 ) : Parcelable {
-    class RegistrationError() {
+    class RegistrationError {
         companion object {
             fun mustFillAllFields(application: Application): String {
                 return application.getString(R.string.registration_error_must_fill_all_fields)

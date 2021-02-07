@@ -42,7 +42,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="#000"
                 android:hint="@string/field_username"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:autofillHints="" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,7 +63,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="#000"
                 android:hint="@string/field_password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:autofillHints="" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

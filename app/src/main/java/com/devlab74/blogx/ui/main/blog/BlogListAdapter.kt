@@ -1,12 +1,10 @@
 package com.devlab74.blogx.ui.main.blog
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.*
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
-import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.LayoutBlogListItemBinding
 import com.devlab74.blogx.databinding.LayoutNoMoreResultsBinding
 import com.devlab74.blogx.models.BlogPost
@@ -29,7 +27,7 @@ class BlogListAdapter(
         ""
     )
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BlogPost>() {
+    private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BlogPost>() {
         override fun areItemsTheSame(oldItem: BlogPost, newItem: BlogPost): Boolean {
             return oldItem.id == newItem.id
         }
@@ -115,13 +113,13 @@ class BlogListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is BlogViewHolder -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (differ.currentList.get(position).id != "null") {
+        if (differ.currentList[position].id != "null") {
             return BLOG_ITEM
         }
         return NO_MORE_RESULTS

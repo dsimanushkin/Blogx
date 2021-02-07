@@ -56,8 +56,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(resultObj.statusCode, application),
-                                UIComponentType.Dialog(),
-                                MessageType.Error()
+                                UIComponentType.Dialog,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -69,8 +69,8 @@ constructor(
                     return DataState.data(
                         response = Response(
                             message = handleErrors(resultObj.statusCode, application),
-                            uiComponentType = UIComponentType.Dialog(),
-                            messageType = MessageType.Success()
+                            uiComponentType = UIComponentType.Dialog,
+                            messageType = MessageType.Success
                         ),
                         data = null,
                         stateEvent = stateEvent

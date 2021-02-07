@@ -5,13 +5,11 @@ import android.app.Activity
 import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.IdRes
-import androidx.annotation.NavigationRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.devlab74.blogx.R
 import com.devlab74.blogx.fragments.main.account.AccountNavHostFragment
@@ -26,12 +24,12 @@ class BottomNavController(
     val context: Context,
     @IdRes val containerId: Int,
     @IdRes val appStartDestinationId: Int,
-    val graphChangeListener: OnNavigationGraphChanged?
+    private val graphChangeListener: OnNavigationGraphChanged?
 ) {
     lateinit var navigationBackStack: BackStack
     lateinit var activity: Activity
     lateinit var fragmentManager: FragmentManager
-    lateinit var navItemChangeListener: OnNavigationItemChanged
+    private lateinit var navItemChangeListener: OnNavigationItemChanged
 
     init {
         if (context is Activity) {
@@ -41,9 +39,7 @@ class BottomNavController(
     }
 
     fun setupBottomNavigationBackStack(previousBackStack: BackStack?){
-        navigationBackStack = previousBackStack?.let{
-            it
-        }?: BackStack.of(appStartDestinationId)
+        navigationBackStack = previousBackStack ?: BackStack.of(appStartDestinationId)
     }
 
     fun onNavigationItemSelected(menuItemId: Int = navigationBackStack.last()): Boolean {

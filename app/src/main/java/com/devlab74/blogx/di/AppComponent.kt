@@ -7,8 +7,10 @@ import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.BaseActivity
 import dagger.BindsInstance
 import dagger.Component
+import kotlinx.coroutines.FlowPreview
 import javax.inject.Singleton
 
+@FlowPreview
 @Singleton
 @Component(
     modules = [
@@ -29,7 +31,9 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
+    @FlowPreview
     fun authComponent(): AuthComponent.Factory
 
+    @FlowPreview
     fun mainComponent(): MainComponent.Factory
 }

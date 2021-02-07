@@ -2,7 +2,6 @@ package com.devlab74.blogx.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.devlab74.blogx.di.auth.AuthScope
 import com.devlab74.blogx.di.main.MainScope
 import javax.inject.Inject
 import javax.inject.Provider

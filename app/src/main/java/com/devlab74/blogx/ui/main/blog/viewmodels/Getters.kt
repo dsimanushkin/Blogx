@@ -21,12 +21,6 @@ fun BlogViewModel.getPage(): Int {
 
 @FlowPreview
 @OptIn(ExperimentalCoroutinesApi::class)
-fun BlogViewModel.getIsQueryExhausted(): Boolean {
-    return getCurrentViewStateOrNew().blogFields.isQueryExhausted?: false
-}
-
-@FlowPreview
-@OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getFilter(): String {
     return getCurrentViewStateOrNew().blogFields.filter?: BLOG_FILTER_DATE_UPDATED
 }
@@ -66,15 +60,15 @@ fun BlogViewModel.getBlogPost(): BlogPost {
 
 @FlowPreview
 @OptIn(ExperimentalCoroutinesApi::class)
-fun BlogViewModel.getDummyBlogPost(): BlogPost {
+fun getDummyBlogPost(): BlogPost {
     return BlogPost("null", "", "", "", 1, "")
 }
 
 @FlowPreview
 @OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getUpdatedBlogUri(): Uri? {
-    getCurrentViewStateOrNew().let {
-        it.updatedBlogFields.updatedImageUri?.let {
+    getCurrentViewStateOrNew().let { viewState ->
+        viewState.updatedBlogFields.updatedImageUri?.let {
             return it
         }
     }

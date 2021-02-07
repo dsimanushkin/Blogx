@@ -8,7 +8,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -29,11 +28,9 @@ import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_DATE_UPDATED
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_FILTER_USERNAME
 import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_ORDER_ASC
-import com.devlab74.blogx.util.DataState
 import com.devlab74.blogx.ui.main.blog.state.BLOG_VIEW_STATE_BUNDLE_KEY
 import com.devlab74.blogx.ui.main.blog.state.BlogViewState
 import com.devlab74.blogx.ui.main.blog.viewmodels.*
-import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
 import com.devlab74.blogx.util.StateMessageCallback
 import com.devlab74.blogx.util.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.layout_blog_filter.view.*
@@ -48,8 +45,7 @@ import javax.inject.Inject
 class BlogFragment
 @Inject
 constructor(
-    viewModelFactory: ViewModelProvider.Factory,
-    private val requestOptions: RequestOptions
+    viewModelFactory: ViewModelProvider.Factory
 ): BaseBlogFragment(viewModelFactory),
     BlogListAdapter.Interaction,
     SwipeRefreshLayout.OnRefreshListener
@@ -164,7 +160,7 @@ constructor(
 
         // Case 1: Enter on keyboard
         val searchPlate = searchView.findViewById(R.id.search_src_text) as EditText
-        searchPlate.setOnEditorActionListener {v, actionId, event ->
+        searchPlate.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED || actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val searchQuery = v.text.toString()
                 viewModel.setQuery(searchQuery).let {

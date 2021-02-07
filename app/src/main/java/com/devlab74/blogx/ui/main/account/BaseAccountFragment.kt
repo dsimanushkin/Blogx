@@ -37,7 +37,7 @@ abstract class BaseAccountFragment(
 
     private fun setupChannel() = viewModel.setupChannel()
 
-    fun setupActionBarWithNavController(fragmentId: Int, activity: AppCompatActivity) {
+    private fun setupActionBarWithNavController(fragmentId: Int, activity: AppCompatActivity) {
         val appBarConfiguration = AppBarConfiguration(setOf(fragmentId))
         NavigationUI.setupActionBarWithNavController(
             activity,

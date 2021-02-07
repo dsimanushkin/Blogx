@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.*
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.RequestManager
@@ -103,7 +102,7 @@ constructor(
             }
         })
 
-        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer { jobCounter ->
+        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer {
             uiCommunicationListener.displayProgressBar(viewModel.areAnyJobsActive())
         })
 
@@ -224,12 +223,12 @@ constructor(
 
     }
 
-    fun showErrorDialog(errorMessage: String){
+    private fun showErrorDialog(errorMessage: String){
         uiCommunicationListener.onResponseReceived(
             response = Response(
                 message = errorMessage,
-                uiComponentType = UIComponentType.Dialog(),
-                messageType = MessageType.Error()
+                uiComponentType = UIComponentType.Dialog,
+                messageType = MessageType.Error
             ),
             stateMessageCallback = object: StateMessageCallback{
                 override fun removeMessageFromStack() {
@@ -258,7 +257,7 @@ constructor(
                 response = Response(
                     message = getString(R.string.are_you_sure_publish),
                     uiComponentType = UIComponentType.AreYouSureDialog(callback),
-                    messageType = MessageType.Info()
+                    messageType = MessageType.Info
                 ),
                 stateMessageCallback = object: StateMessageCallback{
                     override fun removeMessageFromStack() {

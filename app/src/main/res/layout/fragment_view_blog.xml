@@ -24,7 +24,6 @@
             app:layout_constraintBottom_toTopOf="@+id/blog_image"
             android:gravity="center_vertical"
             android:layout_marginStart="10dp"
-            android:text="The Title of a Blog"
             android:textColor="#000"
             android:textSize="19sp"
             android:textStyle="bold" />
@@ -38,7 +37,8 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/container1"
             android:scaleType="fitXY"
-            android:adjustViewBounds="true" />
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/image_description_blog_image" />
 
         <LinearLayout
             android:id="@+id/container1"
@@ -55,7 +55,6 @@
                 android:id="@+id/blog_author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="John Doe"
                 android:textColor="@color/grey5"
                 android:textSize="15sp" />
 
@@ -63,7 +62,6 @@
                 android:id="@+id/blog_update_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Updated on January 15, 2021"
                 android:textColor="@color/grey5"
                 android:textSize="13sp"
                 android:layout_marginTop="10dp" />
@@ -78,7 +76,6 @@
                 android:id="@+id/blog_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="This is some blog content"
                 android:textColor="#000"
                 android:textSize="17sp"
                 android:layout_marginTop="20dp" />

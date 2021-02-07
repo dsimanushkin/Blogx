@@ -2,7 +2,10 @@ package com.devlab74.blogx.di.auth
 
 import com.devlab74.blogx.ui.auth.AuthActivity
 import dagger.Subcomponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 
+@FlowPreview
 @AuthScope
 @Subcomponent(
     modules = [
@@ -17,5 +20,6 @@ interface AuthComponent {
         fun create(): AuthComponent
     }
 
+    @ExperimentalCoroutinesApi
     fun inject(authActivity: AuthActivity)
 }

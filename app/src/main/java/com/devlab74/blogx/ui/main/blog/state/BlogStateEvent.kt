@@ -16,7 +16,7 @@ sealed class BlogStateEvent: StateEvent {
         }
     }
 
-    class CheckAuthorOfBlogPost: BlogStateEvent() {
+    object CheckAuthorOfBlogPost : BlogStateEvent() {
         override fun errorInfo(): String {
             return "Error checking if you are the author of this blog post."
         }
@@ -26,7 +26,7 @@ sealed class BlogStateEvent: StateEvent {
         }
     }
 
-    class DeleteBlogPostEvent: BlogStateEvent() {
+    object DeleteBlogPostEvent : BlogStateEvent() {
         override fun errorInfo(): String {
             return "Error deleting that blog post."
         }
@@ -50,7 +50,7 @@ sealed class BlogStateEvent: StateEvent {
         }
     }
 
-    class None: BlogStateEvent() {
+    object None : BlogStateEvent() {
         override fun errorInfo(): String {
             return "None"
         }

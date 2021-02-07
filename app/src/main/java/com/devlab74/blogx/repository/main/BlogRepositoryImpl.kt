@@ -124,8 +124,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(resultObj.statusCode, application),
-                                UIComponentType.Dialog(),
-                                MessageType.Error()
+                                UIComponentType.Dialog,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -157,7 +157,7 @@ constructor(
                         else -> {
                             buildError(
                                 handleErrors(9001, application),
-                                UIComponentType.None(),
+                                UIComponentType.None,
                                 stateEvent
                             )
                         }
@@ -188,8 +188,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(resultObj.statusCode, application),
-                                UIComponentType.Dialog(),
-                                MessageType.Error()
+                                UIComponentType.Dialog,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -199,8 +199,8 @@ constructor(
                         return DataState.data(
                             response = Response(
                                 message = handleErrors(resultObj.statusCode, application),
-                                uiComponentType = UIComponentType.Toast(),
-                                messageType = MessageType.Success()
+                                uiComponentType = UIComponentType.Toast,
+                                messageType = MessageType.Success
                             ),
                             stateEvent = stateEvent
                         )
@@ -208,7 +208,7 @@ constructor(
                     else{
                         return buildError(
                             handleErrors(9001, application),
-                            UIComponentType.Dialog(),
+                            UIComponentType.Dialog,
                             stateEvent
                         )
                     }
@@ -245,8 +245,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(resultObj.statusCode, application),
-                                UIComponentType.Dialog(),
-                                MessageType.Error()
+                                UIComponentType.Dialog,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -264,8 +264,8 @@ constructor(
                     return DataState.data(
                         response = Response(
                             message = handleErrors(resultObj.statusCode, application),
-                            uiComponentType = UIComponentType.Toast(),
-                            messageType = MessageType.Success()
+                            uiComponentType = UIComponentType.Toast,
+                            messageType = MessageType.Success
                         ),
                         data =  BlogViewState(
                             viewBlogFields = BlogViewState.ViewBlogFields(

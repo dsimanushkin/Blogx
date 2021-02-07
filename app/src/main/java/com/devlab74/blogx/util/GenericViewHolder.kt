@@ -5,5 +5,5 @@ import com.devlab74.blogx.databinding.LayoutNoMoreResultsBinding
 
 class GenericViewHolder
 constructor(
-    private val binding: LayoutNoMoreResultsBinding
+    binding: LayoutNoMoreResultsBinding
 ): RecyclerView.ViewHolder(binding.root)

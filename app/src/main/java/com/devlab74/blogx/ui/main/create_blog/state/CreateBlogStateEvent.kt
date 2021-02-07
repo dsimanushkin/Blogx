@@ -18,7 +18,7 @@ sealed class CreateBlogStateEvent: StateEvent {
         }
     }
 
-    class None: CreateBlogStateEvent() {
+    object None : CreateBlogStateEvent() {
         override fun errorInfo(): String {
             return "None"
         }

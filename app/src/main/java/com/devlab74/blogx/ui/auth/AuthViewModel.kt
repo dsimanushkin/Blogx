@@ -1,10 +1,8 @@
 package com.devlab74.blogx.ui.auth
 
-import androidx.lifecycle.LiveData
 import com.devlab74.blogx.di.auth.AuthScope
 import com.devlab74.blogx.models.AuthToken
 import com.devlab74.blogx.repository.auth.AuthRepository
-import com.devlab74.blogx.repository.auth.AuthRepositoryImpl
 import com.devlab74.blogx.ui.BaseViewModel
 import com.devlab74.blogx.ui.auth.state.AuthStateEvent
 import com.devlab74.blogx.ui.auth.state.AuthViewState
@@ -24,7 +22,7 @@ import javax.inject.Inject
 class AuthViewModel
 @Inject
 constructor(
-    val authRepository: AuthRepository
+    private val authRepository: AuthRepository
 ): BaseViewModel<AuthViewState>() {
 
     override fun handleNewData(data: AuthViewState) {
@@ -65,8 +63,8 @@ constructor(
                         DataState.error(
                             response = Response(
                                 message = INVALID_STATE_EVENT,
-                                uiComponentType = UIComponentType.None(),
-                                messageType = MessageType.Error()
+                                uiComponentType = UIComponentType.None,
+                                messageType = MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -99,7 +97,7 @@ constructor(
         setViewState(update)
     }
 
-    fun setAuthToken(authToken: AuthToken){
+    private fun setAuthToken(authToken: AuthToken){
         val update = getCurrentViewStateOrNew()
         if(update.authToken == authToken){
             return

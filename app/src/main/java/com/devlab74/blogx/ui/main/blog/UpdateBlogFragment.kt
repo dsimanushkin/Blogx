@@ -130,7 +130,7 @@ constructor(
         val mimeType = arrayOf("image/jpeg", "image/png", "image/jpg")
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeType)
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        startActivityForResult(intent, Constants.GALLERY_REQUEST_CODE)
+        startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
 
     private fun launchImageCrop(uri: Uri?) {
@@ -145,8 +145,8 @@ constructor(
         uiCommunicationListener.onResponseReceived(
             response = Response(
                 message = getString(R.string.something_wrong_with_image),
-                uiComponentType = UIComponentType.Dialog(),
-                messageType = MessageType.Error()
+                uiComponentType = UIComponentType.Dialog,
+                messageType = MessageType.Error
             ),
             stateMessageCallback = object: StateMessageCallback{
                 override fun removeMessageFromStack() {
@@ -182,7 +182,7 @@ constructor(
         }
     }
 
-    fun setBlogProperties(title: String?, body: String?, image: Uri?){
+    private fun setBlogProperties(title: String?, body: String?, image: Uri?){
         image?.let {
             requestManager
                 .load(it)

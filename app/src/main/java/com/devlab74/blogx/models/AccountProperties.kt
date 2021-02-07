@@ -46,4 +46,11 @@ data class AccountProperties(
 
         return true
     }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + email.hashCode()
+        result = 31 * result + username.hashCode()
+        return result
+    }
 }

@@ -1,4 +1,4 @@
-package com.devlab74.blogx.di.auth.keys
+package com.devlab74.blogx.di.main.keys
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

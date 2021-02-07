@@ -2,7 +2,6 @@ package com.devlab74.blogx.ui.main.account
 
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -10,14 +9,12 @@ import com.devlab74.blogx.R
 import com.devlab74.blogx.databinding.FragmentAccountBinding
 import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.models.AccountProperties
-import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.main.account.state.ACCOUNT_VIEW_STATE_BUNDLE_KEY
 import com.devlab74.blogx.ui.main.account.state.AccountStateEvent
 import com.devlab74.blogx.ui.main.account.state.AccountViewState
 import com.devlab74.blogx.util.StateMessageCallback
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import timber.log.Timber
 import javax.inject.Inject
 
 @FlowPreview
@@ -96,7 +93,7 @@ constructor(
     override fun onResume() {
         super.onResume()
         viewModel.setStateEvent(
-            AccountStateEvent.GetAccountPropertiesEvent()
+            AccountStateEvent.GetAccountPropertiesEvent
         )
     }
 

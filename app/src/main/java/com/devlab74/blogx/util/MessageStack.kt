@@ -6,8 +6,6 @@ import kotlinx.android.parcel.IgnoredOnParcel
 import timber.log.Timber
 import java.lang.IndexOutOfBoundsException
 
-const val MESSAGE_STACK_BUNDLE_KEY = "com.devlab74.blogx.util.MessageStack"
-
 class MessageStack: ArrayList<StateMessage>() {
 
     @IgnoredOnParcel
@@ -50,8 +48,8 @@ class MessageStack: ArrayList<StateMessage>() {
         return StateMessage(
             Response(
                 message = "Does nothing",
-                uiComponentType = UIComponentType.None(),
-                messageType = MessageType.None()
+                uiComponentType = UIComponentType.None,
+                messageType = MessageType.None
             )
         ) // This does nothing
     }

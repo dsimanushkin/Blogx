@@ -32,7 +32,7 @@ sealed class AuthStateEvent: StateEvent {
         }
     }
 
-    class CheckPreviousAuthEvent: AuthStateEvent() {
+    object CheckPreviousAuthEvent : AuthStateEvent() {
         override fun errorInfo(): String {
             return "Error checking for previously authenticated user."
         }
@@ -42,7 +42,7 @@ sealed class AuthStateEvent: StateEvent {
         }
     }
 
-    class None(): AuthStateEvent() {
+    object None : AuthStateEvent() {
         override fun errorInfo(): String {
             return "None"
         }

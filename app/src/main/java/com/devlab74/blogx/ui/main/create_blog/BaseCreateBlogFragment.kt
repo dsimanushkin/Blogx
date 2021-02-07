@@ -32,14 +32,14 @@ constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupActionBarWithNavController(R.id.createBlogFragment, activity as AppCompatActivity)
+        setupActionBarWithNavController(activity as AppCompatActivity)
         setupChannel()
     }
 
     private fun setupChannel() = viewModel.setupChannel()
 
-    fun setupActionBarWithNavController(fragmentId: Int, activity: AppCompatActivity) {
-        val appBarConfiguration = AppBarConfiguration(setOf(fragmentId))
+    private fun setupActionBarWithNavController(activity: AppCompatActivity) {
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.createBlogFragment))
         NavigationUI.setupActionBarWithNavController(
             activity,
             findNavController(),

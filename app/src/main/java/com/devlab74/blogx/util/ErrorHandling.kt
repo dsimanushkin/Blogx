@@ -12,13 +12,6 @@ class ErrorHandling {
         const val UNKNOWN_ERROR = "Unknown Error"
         const val INVALID_STATE_EVENT = "Invalid state event"
 
-        fun isNetworkError(msg: String, application: Application): Boolean {
-            return when {
-                msg.contains(handleErrors(9002, application)) -> true
-                else -> false
-            }
-        }
-
         fun handleErrors(statusCode: Int?, application: Application): String {
             return when(statusCode) {
                 1011 -> application.getString(R.string.username_field_required)

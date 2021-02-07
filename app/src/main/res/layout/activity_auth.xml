@@ -25,6 +25,7 @@
 
     <ImageView
         android:id="@+id/splash_logo"
+        android:contentDescription="@string/image_description_splash_logo"
         android:layout_width="0dp"
         android:layout_height="75dp"
         android:src="@drawable/blogx_app_logo"

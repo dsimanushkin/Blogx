@@ -32,7 +32,9 @@
                 android:layout_height="wrap_content"
                 android:textColor="#000"
                 android:inputType="textEmailAddress"
-                android:imeOptions="flagNoExtractUi"/>
+                android:imeOptions="flagNoExtractUi"
+                android:autofillHints=""
+                android:hint="@string/your_email"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -54,7 +56,9 @@
                 android:textColor="#000"
                 android:inputType="text"
                 android:layout_marginTop="30dp"
-                android:imeOptions="flagNoExtractUi"/>
+                android:imeOptions="flagNoExtractUi"
+                android:autofillHints=""
+                android:hint="@string/your_username"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 

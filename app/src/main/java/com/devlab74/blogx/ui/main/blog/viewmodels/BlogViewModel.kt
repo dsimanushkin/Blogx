@@ -28,7 +28,7 @@ class BlogViewModel
 constructor(
     private val sessionManager: SessionManager,
     private val blogRepository: BlogRepository,
-    private val sharedPreferences: SharedPreferences,
+    sharedPreferences: SharedPreferences,
     private val editor: SharedPreferences.Editor
 ): BaseViewModel<BlogViewState>() {
 
@@ -143,8 +143,8 @@ constructor(
                                 DataState.error(
                                     response = Response(
                                         message = INVALID_STATE_EVENT,
-                                        uiComponentType = UIComponentType.None(),
-                                        messageType = MessageType.Error()
+                                        uiComponentType = UIComponentType.None,
+                                        messageType = MessageType.Error
                                     ),
                                     stateEvent = stateEvent
                                 )

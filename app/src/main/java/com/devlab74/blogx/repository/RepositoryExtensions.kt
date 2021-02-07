@@ -85,7 +85,7 @@ fun <ViewState> buildError(
         response = Response(
             message = "${stateEvent?.errorInfo()}\n\nReason: $message",
             uiComponentType = uiComponentType,
-            messageType = MessageType.Error()
+            messageType = MessageType.Error
         ),
         stateEvent = stateEvent
     )

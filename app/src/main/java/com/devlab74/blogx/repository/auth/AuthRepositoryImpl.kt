@@ -34,10 +34,10 @@ constructor(
     val application: Application,
     val authTokenDao: AuthTokenDao,
     val accountPropertiesDao: AccountPropertiesDao,
-    val blogxAuthService: BlogxAuthService,
+    private val blogxAuthService: BlogxAuthService,
     val sessionManager: SessionManager,
-    val sharedPreferences: SharedPreferences,
-    val sharedPrefsEditor: SharedPreferences.Editor
+    private val sharedPreferences: SharedPreferences,
+    private val sharedPrefsEditor: SharedPreferences.Editor
 ): AuthRepository {
 
     override fun attemptLogin(
@@ -68,8 +68,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(resultObj.statusCode, application),
-                                UIComponentType.Dialog(),
-                                MessageType.Error()
+                                UIComponentType.Dialog,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -94,8 +94,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(9006, application),
-                                UIComponentType.Dialog(),
-                                MessageType.Error()
+                                UIComponentType.Dialog,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -120,7 +120,7 @@ constructor(
             emit(
                 buildError(
                     loginFieldErrors,
-                    UIComponentType.Dialog(),
+                    UIComponentType.Dialog,
                     stateEvent
                 )
             )
@@ -154,8 +154,8 @@ constructor(
                             return DataState.error(
                                 response = Response(
                                     handleErrors(resultObj.statusCode, application),
-                                    UIComponentType.Dialog(),
-                                    MessageType.Error()
+                                    UIComponentType.Dialog,
+                                    MessageType.Error
                                 ),
                                 stateEvent = stateEvent
                             )
@@ -172,8 +172,8 @@ constructor(
                             return DataState.error(
                                 response = Response(
                                     handleErrors(9007, application),
-                                    UIComponentType.Dialog(),
-                                    MessageType.Error()
+                                    UIComponentType.Dialog,
+                                    MessageType.Error
                                 ),
                                 stateEvent = stateEvent
                             )
@@ -189,8 +189,8 @@ constructor(
                             return DataState.error(
                                 response = Response(
                                     handleErrors(9006, application),
-                                    UIComponentType.Dialog(),
-                                    MessageType.Error()
+                                    UIComponentType.Dialog,
+                                    MessageType.Error
                                 ),
                                 stateEvent = stateEvent
                             )
@@ -211,7 +211,7 @@ constructor(
             emit(
                 buildError(
                     registrationFieldErrors,
-                    UIComponentType.Dialog(),
+                    UIComponentType.Dialog,
                     stateEvent
                 )
             )
@@ -265,8 +265,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(9008, application),
-                                UIComponentType.None(),
-                                MessageType.Error()
+                                UIComponentType.None,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -285,8 +285,8 @@ constructor(
         return DataState.error(
             response = Response(
                 handleErrors(9008, application),
-                UIComponentType.None(),
-                MessageType.Error()
+                UIComponentType.None,
+                MessageType.Error
             ),
             stateEvent = stateEvent
         )

@@ -109,8 +109,8 @@ class AuthActivity : BaseActivity() {
         })
     }
 
-    fun checkPreviousAuthUser() {
-        viewModel.setStateEvent(AuthStateEvent.CheckPreviousAuthEvent())
+    private fun checkPreviousAuthUser() {
+        viewModel.setStateEvent(AuthStateEvent.CheckPreviousAuthEvent)
     }
 
     private fun navMainActivity() {

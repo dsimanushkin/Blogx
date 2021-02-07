@@ -1,10 +1,8 @@
 package com.devlab74.blogx.ui.main.account
 
-import androidx.lifecycle.LiveData
 import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.models.AccountProperties
 import com.devlab74.blogx.repository.main.AccountRepository
-import com.devlab74.blogx.repository.main.AccountRepositoryImpl
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.BaseViewModel
 import com.devlab74.blogx.ui.main.account.state.AccountStateEvent
@@ -24,7 +22,7 @@ class AccountViewModel
 @Inject
 constructor(
     val sessionManager: SessionManager,
-    val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository
 ): BaseViewModel<AccountViewState>() {
 
     override fun handleNewData(data: AccountViewState) {
@@ -69,8 +67,8 @@ constructor(
                             DataState.error(
                                 response = Response(
                                     message = INVALID_STATE_EVENT,
-                                    uiComponentType = UIComponentType.None(),
-                                    messageType = MessageType.Error()
+                                    uiComponentType = UIComponentType.None,
+                                    messageType = MessageType.Error
                                 ),
                                 stateEvent = stateEvent
                             )
@@ -82,7 +80,7 @@ constructor(
         }
     }
 
-    fun setAccountPropertiesData(accountProperties: AccountProperties){
+    private fun setAccountPropertiesData(accountProperties: AccountProperties){
         val update = getCurrentViewStateOrNew()
         if(update.accountProperties == accountProperties){
             return

@@ -1,11 +1,8 @@
 package com.devlab74.blogx.ui.main.create_blog
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
 import com.devlab74.blogx.di.main.MainScope
 import com.devlab74.blogx.repository.main.CreateBlogRepository
-import com.devlab74.blogx.repository.main.CreateBlogRepositoryImpl
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.ui.BaseViewModel
 import com.devlab74.blogx.ui.main.create_blog.state.CreateBlogStateEvent
@@ -26,7 +23,7 @@ import javax.inject.Inject
 class CreateBlogViewModel
 @Inject
 constructor(
-    val createBlogRepository: CreateBlogRepository,
+    private val createBlogRepository: CreateBlogRepository,
     val sessionManager: SessionManager
 ): BaseViewModel<CreateBlogViewState>() {
     override fun handleNewData(data: CreateBlogViewState) {
@@ -65,8 +62,8 @@ constructor(
                             DataState.error(
                                 response = Response(
                                     message = INVALID_STATE_EVENT,
-                                    uiComponentType = UIComponentType.None(),
-                                    messageType = MessageType.Error()
+                                    uiComponentType = UIComponentType.None,
+                                    messageType = MessageType.Error
                                 ),
                                 stateEvent = stateEvent
                             )

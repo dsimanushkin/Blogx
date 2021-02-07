@@ -3,7 +3,6 @@ package com.devlab74.blogx.ui.main.blog
 import android.os.Bundle
 import android.view.*
 import androidx.core.net.toUri
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -96,7 +95,7 @@ constructor(
             response = Response(
                 message = getString(R.string.are_you_sure_delete),
                 uiComponentType = UIComponentType.AreYouSureDialog(callback),
-                messageType = MessageType.Info()
+                messageType = MessageType.Info
             ),
             stateMessageCallback = object: StateMessageCallback {
                 override fun removeMessageFromStack() {
@@ -143,7 +142,7 @@ constructor(
 
     private fun deleteBlogPost() {
         viewModel.setStateEvent(
-            BlogStateEvent.DeleteBlogPostEvent()
+            BlogStateEvent.DeleteBlogPostEvent
         )
     }
 
@@ -154,7 +153,7 @@ constructor(
 
     private fun checkIsAuthorOfBlogPost() {
         viewModel.setIsAuthorOfBlogPost(false) // reset
-        viewModel.setStateEvent(BlogStateEvent.CheckAuthorOfBlogPost())
+        viewModel.setStateEvent(BlogStateEvent.CheckAuthorOfBlogPost)
     }
 
     private fun setBlogProperties(blogPost: BlogPost) {
@@ -184,7 +183,7 @@ constructor(
         return super.onOptionsItemSelected(item)
     }
 
-    fun navUpdateBlogFragment() {
+    private fun navUpdateBlogFragment() {
         try {
             // prep for next fragment
             viewModel.setUpdatedTitle(viewModel.getBlogPost().title)

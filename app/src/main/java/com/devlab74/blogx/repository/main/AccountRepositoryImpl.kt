@@ -30,7 +30,7 @@ constructor(
     val blogxMainService: BlogxMainService,
     val accountPropertiesDao: AccountPropertiesDao,
     val sessionManager: SessionManager,
-    val sharedPrefsEditor: SharedPreferences.Editor
+    private val sharedPrefsEditor: SharedPreferences.Editor
 ): AccountRepository {
 
     override fun getAccountProperties(
@@ -97,8 +97,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(resultObj.statusCode, application),
-                                UIComponentType.Dialog(),
-                                MessageType.Error()
+                                UIComponentType.Dialog,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -118,8 +118,8 @@ constructor(
                         data = null,
                         response = Response(
                             message = handleErrors(resultObj.statusCode, application),
-                            uiComponentType = UIComponentType.Toast(),
-                            messageType = MessageType.Success()
+                            uiComponentType = UIComponentType.Toast,
+                            messageType = MessageType.Success
                         ),
                         stateEvent = stateEvent
                     )
@@ -156,8 +156,8 @@ constructor(
                         return DataState.error(
                             response = Response(
                                 handleErrors(resultObj.statusCode, application),
-                                UIComponentType.Dialog(),
-                                MessageType.Error()
+                                UIComponentType.Dialog,
+                                MessageType.Error
                             ),
                             stateEvent = stateEvent
                         )
@@ -167,8 +167,8 @@ constructor(
                         data = null,
                         response = Response(
                             message = handleErrors(resultObj.statusCode, application),
-                            uiComponentType = UIComponentType.Toast(),
-                            messageType = MessageType.Success()
+                            uiComponentType = UIComponentType.Toast,
+                            messageType = MessageType.Success
                         ),
                         stateEvent = stateEvent
                     )

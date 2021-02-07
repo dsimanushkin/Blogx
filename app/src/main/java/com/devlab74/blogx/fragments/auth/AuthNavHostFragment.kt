@@ -5,15 +5,19 @@ import android.os.Bundle
 import androidx.annotation.NavigationRes
 import androidx.navigation.fragment.NavHostFragment
 import com.devlab74.blogx.ui.auth.AuthActivity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 
 class AuthNavHostFragment : NavHostFragment() {
+    @ExperimentalCoroutinesApi
+    @FlowPreview
     override fun onAttach(context: Context) {
         childFragmentManager.fragmentFactory = (activity as AuthActivity).fragmentFactory
         super.onAttach(context)
     }
 
     companion object {
-        const val KEY_GRAPH_ID = "android-support-nav:fragment:graphId"
+        private const val KEY_GRAPH_ID = "android-support-nav:fragment:graphId"
 
         @JvmStatic
         fun create(

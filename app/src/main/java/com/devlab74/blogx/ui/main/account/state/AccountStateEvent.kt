@@ -3,7 +3,7 @@ package com.devlab74.blogx.ui.main.account.state
 import com.devlab74.blogx.util.StateEvent
 
 sealed class AccountStateEvent: StateEvent {
-    class GetAccountPropertiesEvent: AccountStateEvent() {
+    object GetAccountPropertiesEvent : AccountStateEvent() {
         override fun errorInfo(): String {
             return "Error retrieving account properties."
         }
@@ -40,7 +40,7 @@ sealed class AccountStateEvent: StateEvent {
         }
     }
 
-    class None: AccountStateEvent() {
+    object None : AccountStateEvent() {
         override fun errorInfo(): String {
             return "None"
         }

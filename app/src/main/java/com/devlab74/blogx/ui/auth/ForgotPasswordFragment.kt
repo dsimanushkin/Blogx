@@ -36,15 +36,15 @@ constructor(
         viewModel.cancelActiveJobs()
     }
 
-    val webInteractionCallback = object: WebAppInterface.OnWebInteractionCallback {
+    private val webInteractionCallback = object: WebAppInterface.OnWebInteractionCallback {
 
         override fun onError(errorMessage: String) {
             Timber.d("onError: $errorMessage")
             uiCommunicationListener.onResponseReceived(
                 response = Response(
                     message = errorMessage,
-                    uiComponentType = UIComponentType.Dialog(),
-                    messageType = MessageType.Error()
+                    uiComponentType = UIComponentType.Dialog,
+                    messageType = MessageType.Error
                 ),
                 stateMessageCallback = object: StateMessageCallback{
                     override fun removeMessageFromStack() {
@@ -101,8 +101,6 @@ constructor(
     constructor(
         private val callback: OnWebInteractionCallback
     ) {
-        private val TAG: String = "AppDebug"
-
         @JavascriptInterface
         fun onSuccess(email: String) {
             callback.onSuccess(email)

@@ -27,7 +27,7 @@ constructor(
     override fun instantiate(classLoader: ClassLoader, className: String) =
         when(className) {
             BlogFragment::class.java.name -> {
-                BlogFragment(viewModelFactory, requestOptions)
+                BlogFragment(viewModelFactory)
             }
             ViewBlogFragment::class.java.name -> {
                 ViewBlogFragment(viewModelFactory, requestManager)
@@ -36,7 +36,7 @@ constructor(
                 UpdateBlogFragment(viewModelFactory, requestManager)
             }
             else -> {
-                BlogFragment(viewModelFactory, requestOptions)
+                BlogFragment(viewModelFactory)
             }
         }
 }

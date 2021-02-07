@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -17,7 +16,6 @@ import com.devlab74.blogx.util.ErrorHandling.Companion.handleErrors
 import com.devlab74.blogx.util.StateMessageCallback
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import timber.log.Timber
 import javax.inject.Inject
 
 @FlowPreview
@@ -68,7 +66,7 @@ constructor(
     }
 
     private fun subscribeObservers(){
-        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer { jobCounter ->
+        viewModel.numActiveJobs.observe(viewLifecycleOwner, Observer {
             uiCommunicationListener.displayProgressBar(viewModel.areAnyJobsActive())
         })
 

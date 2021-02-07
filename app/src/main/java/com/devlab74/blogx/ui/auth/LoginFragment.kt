@@ -64,8 +64,8 @@ constructor(
     }
 
     private fun subscribeObservers() {
-        viewModel.viewState.observe(viewLifecycleOwner, Observer {
-            it.loginFields?.let { loginFields ->
+        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
+            viewState.loginFields?.let { loginFields ->
                 loginFields.loginUsername?.let {
                     binding.inputUsername.setText(it)
                 }

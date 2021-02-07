@@ -11,25 +11,25 @@ data class Response(
 )
 
 sealed class UIComponentType{
-    class Toast: UIComponentType()
+    object Toast : UIComponentType()
 
-    class Dialog: UIComponentType()
+    object Dialog : UIComponentType()
 
     class AreYouSureDialog(
         val callback: AreYouSureCallback
     ): UIComponentType()
 
-    class None: UIComponentType()
+    object None : UIComponentType()
 }
 
 sealed class MessageType{
-    class Success: MessageType()
+    object Success : MessageType()
 
-    class Error: MessageType()
+    object Error : MessageType()
 
-    class Info: MessageType()
+    object Info : MessageType()
 
-    class None: MessageType()
+    object None : MessageType()
 }
 
 interface StateMessageCallback{

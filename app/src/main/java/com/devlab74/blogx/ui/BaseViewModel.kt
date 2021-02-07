@@ -16,9 +16,9 @@ import timber.log.Timber
 @ExperimentalCoroutinesApi
 abstract class BaseViewModel<ViewState>: ViewModel() {
 
-    protected val _viewState: MutableLiveData<ViewState> = MutableLiveData()
+    private val _viewState: MutableLiveData<ViewState> = MutableLiveData()
 
-    val dataChannelManager: DataChannelManager<ViewState> = object: DataChannelManager<ViewState>() {
+    private val dataChannelManager: DataChannelManager<ViewState> = object: DataChannelManager<ViewState>() {
         override fun handleNewData(data: ViewState) {
             this@BaseViewModel.handleNewData(data)
         }
@@ -60,9 +60,7 @@ abstract class BaseViewModel<ViewState>: ViewModel() {
     }
 
     fun getCurrentViewStateOrNew(): ViewState {
-        return viewState.value?.let {
-            it
-        }?: initNewViewState()
+        return viewState.value ?: initNewViewState()
     }
 
     fun setViewState(viewState: ViewState) {
