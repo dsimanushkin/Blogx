@@ -101,7 +101,6 @@
 			<li>Fragment transition animations</li>
 		</ol>
 	</li>
-
 	<li>
 		<strong>Flows and Channels</strong><br>
 	</li>
