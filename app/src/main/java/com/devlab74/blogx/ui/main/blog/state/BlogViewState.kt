@@ -5,6 +5,10 @@ import android.os.Parcelable
 import com.devlab74.blogx.models.BlogPost
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * This class describes fields that Blog part will hold
+ */
+
 const val BLOG_VIEW_STATE_BUNDLE_KEY = "com.devlab74.blogx.ui.main.blog.state.BlogViewState"
 
 @Parcelize

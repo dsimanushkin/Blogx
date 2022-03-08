@@ -28,6 +28,10 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
+/**
+ * MainActivity Class
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 class MainActivity: BaseActivity(),
@@ -80,7 +84,6 @@ class MainActivity: BaseActivity(),
 
     private fun subscribeObservers() {
         sessionManager.cachedToken.observe(this, Observer { authToken ->
-            Timber.d("MainActivity: subscribeObservers: AuthToken: $authToken")
             if (authToken == null || authToken.accountId == "" || authToken.authToken == null) {
                 navAuthActivity()
                 finish()
@@ -123,7 +126,6 @@ class MainActivity: BaseActivity(),
 
     private fun restoreSession(savedInstanceState: Bundle?){
         savedInstanceState?.get(AUTH_TOKEN_BUNDLE_KEY)?.let{ authToken ->
-            Timber.d("restoreSession: Restoring token: $authToken")
             sessionManager.setValue(authToken as AuthToken)
         }
     }

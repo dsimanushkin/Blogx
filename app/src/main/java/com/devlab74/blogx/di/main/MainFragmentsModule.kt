@@ -11,6 +11,10 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Named
 
+/**
+ * This class is responsible for injecting into Main Fragments (Account/Blog/CreateBlog)
+ */
+
 @Module
 object MainFragmentsModule {
     @JvmStatic

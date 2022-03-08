@@ -11,10 +11,15 @@ import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
+/**
+ * This interface declaring functions that is responsible for API calls of Main -> Blog part of the App
+ */
+
 @FlowPreview
 @MainScope
 interface BlogRepository {
 
+    // Searching for BlogPosts
     fun searchBlogPosts(
         authToken: AuthToken,
         query: String,
@@ -23,18 +28,21 @@ interface BlogRepository {
         stateEvent: StateEvent
     ): Flow<DataState<BlogViewState>>
 
+    // Verifying if USER is an author of BlogPost
     fun isAuthorOfBlogPost(
         authToken: AuthToken,
         blogId: String,
         stateEvent: StateEvent
     ): Flow<DataState<BlogViewState>>
 
+    // Deleting BlogPost
     fun deleteBlogPost(
         authToken: AuthToken,
         blogPost: BlogPost,
         stateEvent: StateEvent
     ): Flow<DataState<BlogViewState>>
 
+    // Updating BlogPost
     fun updateBlogPost(
         authToken: AuthToken,
         blogId: String,

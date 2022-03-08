@@ -10,9 +10,15 @@ import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
+/**
+ * This interface declaring functions that is responsible for API calls of Main -> CreateBlogPost part of the App
+ */
+
 @FlowPreview
 @MainScope
 interface CreateBlogRepository {
+
+    // Creating new BlogPost
     fun createNewBlogPost(
         authToken: AuthToken,
         title: RequestBody,

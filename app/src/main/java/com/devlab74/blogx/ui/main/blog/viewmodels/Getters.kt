@@ -7,6 +7,10 @@ import com.devlab74.blogx.persistence.BlogQueryUtils.Companion.BLOG_ORDER_DESC
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+/**
+ * Getters file that are related to BlogViewModel
+ */
+
 @FlowPreview
 @OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.getSearchQuery(): String {

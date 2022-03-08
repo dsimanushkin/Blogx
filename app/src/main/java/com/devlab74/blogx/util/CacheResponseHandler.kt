@@ -1,5 +1,9 @@
 package com.devlab74.blogx.util
 
+/**
+ * Generic CacheResponseHandler Class
+ */
+
 abstract class CacheResponseHandler<ViewState, Data>(
     private val response: CacheResult<Data?>,
     private val stateEvent: StateEvent?

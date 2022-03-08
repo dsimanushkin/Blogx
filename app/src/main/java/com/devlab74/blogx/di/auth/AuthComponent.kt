@@ -5,6 +5,10 @@ import dagger.Subcomponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+/**
+ * This is the Aut component interface responsible for injecting into the Auth activity
+ */
+
 @FlowPreview
 @AuthScope
 @Subcomponent(

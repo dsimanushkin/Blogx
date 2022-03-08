@@ -8,6 +8,10 @@ import com.devlab74.blogx.ui.main.MainActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+/**
+ * Custom Navigation Host class for Main -> Blog part of the app (Multiple Navigation Graphs in use)
+ */
+
 class BlogNavHostFragment : NavHostFragment() {
     @ExperimentalCoroutinesApi
     @FlowPreview

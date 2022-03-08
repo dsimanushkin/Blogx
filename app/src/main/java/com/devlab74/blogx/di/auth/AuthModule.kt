@@ -13,10 +13,15 @@ import dagger.Provides
 import kotlinx.coroutines.FlowPreview
 import retrofit2.Retrofit
 
+/**
+ * This class is responsible to provide instances of retrofit and Auth repository
+ */
+
 @FlowPreview
 @Module
 object AuthModule {
 
+    // Providing instance of Retrofit Builder (AuthScope)
     @JvmStatic
     @AuthScope
     @Provides
@@ -26,6 +31,7 @@ object AuthModule {
             .create(BlogxAuthService::class.java)
     }
 
+    // Providing instance of Auth Repository (AuthScope)
     @JvmStatic
     @AuthScope
     @Provides

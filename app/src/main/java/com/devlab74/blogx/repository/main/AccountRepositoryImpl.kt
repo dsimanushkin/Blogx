@@ -21,6 +21,10 @@ import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * This class is responsible for implementation of functions declared in AccountRepository interface
+ */
+
 @FlowPreview
 @MainScope
 class AccountRepositoryImpl

@@ -10,6 +10,10 @@ import dagger.Component
 import kotlinx.coroutines.FlowPreview
 import javax.inject.Singleton
 
+/**
+ * This is the main App component interface responsible for injecting activities and initializing sub components
+ */
+
 @FlowPreview
 @Singleton
 @Component(
@@ -31,9 +35,11 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
+    // Auth sub component
     @FlowPreview
     fun authComponent(): AuthComponent.Factory
 
+    // Main sub component
     @FlowPreview
     fun mainComponent(): MainComponent.Factory
 }

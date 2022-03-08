@@ -17,6 +17,11 @@ import okhttp3.MediaType
 import okhttp3.RequestBody
 import javax.inject.Inject
 
+/**
+* CreateBlogViewModel class is responsible for setting new State Events and for setting fields
+* as well as containing method responsible for logging out user
+*/
+
 @ExperimentalCoroutinesApi
 @FlowPreview
 @MainScope

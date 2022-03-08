@@ -5,6 +5,10 @@ import com.devlab74.blogx.util.DateUtils
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ * This class is parsing an API response responsible for Creating and Updating BlogPost
+ */
+
 @JsonClass(generateAdapter = true)
 class BlogCreateUpdateResponse(
     @Json(name = "status")
@@ -34,6 +38,7 @@ class BlogCreateUpdateResponse(
     @Json(name = "username")
     var username: String? = null
 ) {
+    // Converting API response to BlogPost model + converting server date string to long
     fun toBlogPost(): BlogPost {
         return BlogPost(
             id = id!!,

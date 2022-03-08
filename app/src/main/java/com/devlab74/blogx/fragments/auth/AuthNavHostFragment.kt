@@ -8,6 +8,10 @@ import com.devlab74.blogx.ui.auth.AuthActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+/**
+ * Custom Navigation Host class for Auth part of the app (Multiple Navigation Graphs in use)
+ */
+
 class AuthNavHostFragment : NavHostFragment() {
     @ExperimentalCoroutinesApi
     @FlowPreview

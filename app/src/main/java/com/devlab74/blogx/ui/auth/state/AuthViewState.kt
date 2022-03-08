@@ -6,6 +6,7 @@ import com.devlab74.blogx.R
 import com.devlab74.blogx.models.AuthToken
 import kotlinx.android.parcel.Parcelize
 
+// This class describes fields that Auth part will hold
 @Parcelize
 data class AuthViewState(
     var registrationFields: RegistrationFields? = null,
@@ -13,6 +14,7 @@ data class AuthViewState(
     var authToken: AuthToken? = null
 ) : Parcelable
 
+// This class hold fields and contains verification specifically for Registration fields
 @Parcelize
 data class RegistrationFields(
     var registrationEmail: String? = null,
@@ -49,6 +51,7 @@ data class RegistrationFields(
     }
 }
 
+// This class hold fields and contains verification specifically for Login fields
 @Parcelize
 data class LoginFields(
     var loginUsername: String? = null,

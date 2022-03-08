@@ -4,6 +4,10 @@ import android.net.Uri
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * This class describes fields that CreateBlog part will hold
+ */
+
 const val CREATE_BLOG_VIEW_STATE_BUNDLE_KEY = "com.devlab74.blogx.ui.main.create_blog.state.CreateBlogViewState"
 
 @Parcelize

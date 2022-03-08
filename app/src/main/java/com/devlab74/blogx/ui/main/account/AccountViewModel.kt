@@ -15,6 +15,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+/**
+* AccountViewModel class is responsible for setting new State Events and for setting fields
+* as well as containing method responsible for logging out user
+*/
+
 @ExperimentalCoroutinesApi
 @FlowPreview
 @MainScope

@@ -8,6 +8,12 @@ import com.devlab74.blogx.di.main.MainComponent
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 
+/**
+ * Entry Point of the App
+ *
+ * Responsible for initializing Dagger components and releasing them
+ */
+
 class BaseApplication: Application() {
     @FlowPreview
     lateinit var appComponent: AppComponent

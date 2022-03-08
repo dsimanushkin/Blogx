@@ -13,6 +13,10 @@ import dagger.multibindings.IntoMap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+/**
+ * This class is responsible for injecting into Main ViewModel
+ */
+
 @Module
 abstract class MainViewModelModule {
 

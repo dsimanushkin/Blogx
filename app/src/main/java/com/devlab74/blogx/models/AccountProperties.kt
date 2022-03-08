@@ -8,6 +8,10 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * AccountProperties data class (SQLite, Room Persistence, Foreign Key, Multiple Database Tables)
+ */
+
 @JsonClass(generateAdapter = true)
 @Entity(
     tableName = "account_properties",

@@ -18,6 +18,10 @@ import com.devlab74.blogx.fragments.main.create_blog.CreateBlogNavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * This class is responsible for functionality of BottomNavigationController
+ */
+
 const val BOTTOM_NAV_BACKSTACK_KEY = "com.devlab74.blogx.util.BottomNavController.BackStack"
 
 class BottomNavController(

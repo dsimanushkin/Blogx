@@ -11,6 +11,12 @@ import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.util.DateUtils
 import com.devlab74.blogx.util.GenericViewHolder
 
+/**
+ * BlogListAdapter Class
+ *
+ * RecyclerView adapter
+ */
+
 class BlogListAdapter(
     private val interaction: Interaction? = null,
     private val requestManager: RequestManager

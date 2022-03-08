@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+/**
+ * AuthViewModel class is responsible for setting new State Events and for setting fields
+ */
+
 @ExperimentalCoroutinesApi
 @FlowPreview
 @AuthScope
@@ -32,9 +36,7 @@ constructor(
     }
 
     override fun setStateEvent(stateEvent: StateEvent) {
-
         val job: Flow<DataState<AuthViewState>> = when(stateEvent){
-
             is AuthStateEvent.LoginAttemptEvent -> {
                 authRepository.attemptLogin(
                     stateEvent = stateEvent,
@@ -42,7 +44,6 @@ constructor(
                     password = stateEvent.password
                 )
             }
-
             is AuthStateEvent.RegisterAttemptEvent -> {
                 authRepository.attemptRegistration(
                     stateEvent = stateEvent,
@@ -52,11 +53,9 @@ constructor(
                     confirmPassword = stateEvent.confirmPassword
                 )
             }
-
             is AuthStateEvent.CheckPreviousAuthEvent -> {
                 authRepository.checkPreviousAuthUser(stateEvent)
             }
-
             else -> {
                 flow{
                     emit(

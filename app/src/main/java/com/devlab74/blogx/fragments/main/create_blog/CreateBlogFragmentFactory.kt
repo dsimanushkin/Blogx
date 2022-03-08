@@ -9,6 +9,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
+/**
+ * Fragment factory for Main -> CreateBlog part of the app, used for instantiate fragment
+ */
+
 @MainScope
 class CreateBlogFragmentFactory
 @Inject

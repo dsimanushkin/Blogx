@@ -18,6 +18,10 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject
 
+/**
+ * This class is responsible for implementation of functions declared in CreateBlogRepository interface
+ */
+
 @FlowPreview
 @MainScope
 class CreateBlogRepositoryImpl

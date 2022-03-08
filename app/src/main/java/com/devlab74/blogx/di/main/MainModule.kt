@@ -13,10 +13,15 @@ import dagger.Provides
 import kotlinx.coroutines.FlowPreview
 import retrofit2.Retrofit
 
+/**
+ * This class is responsible to provide instances for Main part of the application
+ */
+
 @FlowPreview
 @Module
 object MainModule {
 
+    // Providing instance of Retrofit Builder (MainScope)
     @JvmStatic
     @MainScope
     @Provides
@@ -26,6 +31,7 @@ object MainModule {
             .create(BlogxMainService::class.java)
     }
 
+    // Providing instance of Account Repository (MainScope)
     @JvmStatic
     @MainScope
     @Provides
@@ -45,6 +51,7 @@ object MainModule {
         )
     }
 
+    // Providing instance of BlogPost DAO (MainScope)
     @JvmStatic
     @MainScope
     @Provides
@@ -52,6 +59,7 @@ object MainModule {
         return db.getBlogPostDao()
     }
 
+    // Providing instance of Blog Repository (MainScope)
     @JvmStatic
     @MainScope
     @Provides
@@ -69,6 +77,7 @@ object MainModule {
         )
     }
 
+    // Providing instance of CreateBlog Repository (MainScope)
     @JvmStatic
     @MainScope
     @Provides

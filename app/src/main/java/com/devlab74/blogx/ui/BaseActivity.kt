@@ -19,6 +19,16 @@ import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * BaseActivity class that will be extended in Activities
+ * Used to decrease amount of code that can be reused
+ *
+ * This class is responsible for initializing and displaying Dialogs, hiding virtual keyboard,
+ * checking for granted Read and Write permissions
+ */
+
+// Generic class for Activities that can be reused to reduce code
+
 abstract class BaseActivity : AppCompatActivity(), UICommunicationListener {
     private var dialogInView: MaterialDialog? = null
 

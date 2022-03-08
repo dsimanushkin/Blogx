@@ -3,6 +3,10 @@ package com.devlab74.blogx.ui.main.blog.state
 import com.devlab74.blogx.util.StateEvent
 import okhttp3.MultipartBody
 
+/**
+ * This sealed class is holding states when calling API/Cache related to Main -> Blog part
+ */
+
 sealed class BlogStateEvent: StateEvent {
     class BlogSearchEvent(
         val clearLayoutManagerState: Boolean = true

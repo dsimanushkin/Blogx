@@ -6,6 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.devlab74.blogx.models.AuthToken
 
+/**
+ * DAO interface is responsible for all DB operations related to AuthToken
+ */
+
 @Dao
 interface AuthTokenDao {
 

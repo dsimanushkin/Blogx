@@ -14,6 +14,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
+/**
+ * RegisterFragment Class
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 @AuthScope

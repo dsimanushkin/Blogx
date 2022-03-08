@@ -6,6 +6,12 @@ import com.devlab74.blogx.di.auth.AuthScope
 import javax.inject.Inject
 import javax.inject.Provider
 
+/**
+ * ViewModel Factory class is needed to inject into ViewModels
+ *
+ * Dagger 2 known for not having direct implementation of that so we have to do this workaround
+ */
+
 @AuthScope
 class AuthViewModelFactory
 @Inject

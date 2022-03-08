@@ -26,6 +26,10 @@ import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * This class is responsible for implementation of functions declared in AuthRepository interface
+ */
+
 @FlowPreview
 @AuthScope
 class AuthRepositoryImpl
@@ -223,29 +227,20 @@ constructor(
     ): Flow<DataState<AuthViewState>> = flow {
 
         val previousAuthUserUsername: String? = sharedPreferences.getString(PreferenceKeys.PREVIOUS_AUTH_USER, null)
-        Timber.d("checkPreviousAuthUser: $previousAuthUserUsername")
         if(previousAuthUserUsername.isNullOrBlank()){
             Timber.d("checkPreviousAuthUser: No previously authenticated user found.")
             emit(returnNoTokenFound(stateEvent))
         }
         else{
-            Timber.d("checkPreviousAuthUser: Inside of Else statement")
-            // TEST
-            val cacheRes = accountPropertiesDao.searchByUsername(previousAuthUserUsername)
-            Timber.d("checkPreviousAuthUser: CacheRes: $cacheRes")
-
-
             val apiResult = safeCacheCall(IO){
                 accountPropertiesDao.searchByUsername(previousAuthUserUsername)
             }
-            Timber.d("checkPreviousAuthUser: apiResult: $apiResult")
             emit(
                 object: CacheResponseHandler<AuthViewState, AccountProperties>(
                     response = apiResult,
                     stateEvent = stateEvent
                 ){
                     override suspend fun handleSuccess(resultObj: AccountProperties): DataState<AuthViewState> {
-                        Timber.d("createCacheRequestAndReturn: ResultObject: $resultObj")
                         if(resultObj.id.isNotEmpty()){
                             authTokenDao.searchById(resultObj.id).let { authToken ->
                                 if(authToken != null){

@@ -1,5 +1,9 @@
 package com.devlab74.blogx.util
 
+/**
+ * Generic DataState Class
+ */
+
 data class DataState<T>(
     var stateMessage: StateMessage? = null,
     var data: T? = null,

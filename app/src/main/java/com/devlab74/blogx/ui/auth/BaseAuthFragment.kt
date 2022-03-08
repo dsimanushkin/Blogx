@@ -11,6 +11,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 
+/**
+ * BaseAuthFragment class that will be extended in Fragments that are under Auth part
+ * Used to decrease amount of code that can be reused
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 abstract class BaseAuthFragment

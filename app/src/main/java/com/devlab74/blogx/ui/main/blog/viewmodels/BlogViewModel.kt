@@ -20,6 +20,10 @@ import okhttp3.MediaType
 import okhttp3.RequestBody
 import javax.inject.Inject
 
+/**
+ * AuthViewModel class is responsible for setting new State Events and for setting fields
+ */
+
 @ExperimentalCoroutinesApi
 @FlowPreview
 @MainScope

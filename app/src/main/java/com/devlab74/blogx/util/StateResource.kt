@@ -2,6 +2,10 @@ package com.devlab74.blogx.util
 
 import com.devlab74.blogx.ui.AreYouSureCallback
 
+/**
+ * StateMessage class
+ */
+
 data class StateMessage(val response: Response)
 
 data class Response(

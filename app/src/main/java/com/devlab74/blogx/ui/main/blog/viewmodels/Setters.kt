@@ -6,6 +6,10 @@ import com.devlab74.blogx.models.BlogPost
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+/**
+ * Setters file that are related to BlogViewModel
+ */
+
 @FlowPreview
 @OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.setQuery(query: String) {

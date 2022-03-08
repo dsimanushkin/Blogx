@@ -15,6 +15,10 @@ import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * This class is responsible for operations with AuthToken (Saving it when user logging in/creating new account or logging out)
+ */
+
 @Singleton
 class SessionManager
 @Inject
@@ -22,15 +26,16 @@ constructor(
     private val authTokenDao: AuthTokenDao,
     val application: Application
 ){
-
     private val _cachedToken = MutableLiveData<AuthToken>()
 
     val cachedToken: LiveData<AuthToken> get() = _cachedToken
 
+    // Login user in
     fun login(newValue: AuthToken) {
         setValue(newValue)
     }
 
+    // Logging out user
     fun logout() {
         Timber.d("logout...")
 
@@ -59,6 +64,7 @@ constructor(
         }
     }
 
+    // Setting value of AuthToken to passed value
     fun setValue(newValue: AuthToken?) {
         GlobalScope.launch(Main) {
             if (_cachedToken.value != newValue) {

@@ -21,9 +21,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
+/**
+ * This class is responsible for providing reference of instances required for this app
+ */
+
 @Module
 object AppModule {
 
+    // Room instance reference
     @JvmStatic
     @Singleton
     @Provides
@@ -34,6 +39,7 @@ object AppModule {
             .build()
     }
 
+    // AuthTokenDao instance reference
     @JvmStatic
     @Singleton
     @Provides
@@ -41,6 +47,7 @@ object AppModule {
         return db.getAuthTokenDao()
     }
 
+    // AccountPropertiesDao instance reference
     @JvmStatic
     @Singleton
     @Provides
@@ -48,6 +55,7 @@ object AppModule {
         return db.getAccountPropertiesDao()
     }
 
+    // RequestOptions instance reference (Glide related)
     @JvmStatic
     @Singleton
     @Provides
@@ -57,6 +65,7 @@ object AppModule {
             .error(R.drawable.default_image)
     }
 
+    // Glide instance reference
     @JvmStatic
     @Singleton
     @Provides
@@ -65,6 +74,7 @@ object AppModule {
             .setDefaultRequestOptions(requestOptions)
     }
 
+    // Retrofit Builder instance reference
     @JvmStatic
     @Singleton
     @Provides
@@ -74,6 +84,7 @@ object AppModule {
             .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
     }
 
+    // SharedPrefs instance reference
     @JvmStatic
     @Singleton
     @Provides
@@ -81,6 +92,7 @@ object AppModule {
         return application.getSharedPreferences(PreferenceKeys.APP_PREFERENCES, Context.MODE_PRIVATE)
     }
 
+    // SharedPrefsEditor instance reference
     @JvmStatic
     @Singleton
     @Provides

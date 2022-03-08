@@ -1,5 +1,9 @@
 package com.devlab74.blogx.util
 
+/**
+ * This class contains required Preference Keys
+ */
+
 class PreferenceKeys {
     companion object {
         // Shared Preference Files:

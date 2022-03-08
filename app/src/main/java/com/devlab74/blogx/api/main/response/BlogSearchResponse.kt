@@ -5,6 +5,10 @@ import com.devlab74.blogx.util.DateUtils
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ * This class is parsing an API response responsible for single Blog Search result
+ */
+
 @JsonClass(generateAdapter = true)
 class BlogSearchResponse (
 
@@ -26,11 +30,12 @@ class BlogSearchResponse (
     @Json(name = "username")
     var username: String
 ) {
-
+    // As this is not a Data class this method needs to be overriden
     override fun toString(): String {
         return "BlogSearchResponse(id='$id', title='$title', body='$body', image='$image', dateUpdated='$dateUpdated', username='$username')"
     }
 
+    // Converting API response to BlogPost model + converting server date string to long
     fun toBlogPost(): BlogPost {
         return BlogPost(
             id = id,

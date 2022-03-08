@@ -9,6 +9,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
+/**
+ * DataChannelManager Class
+ *
+ * Responsible for setting up new channels, launching new jobs, checking status of the jobs,
+ * cancelling jobs, doing operations with StateMessages
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 abstract class DataChannelManager<ViewState> {

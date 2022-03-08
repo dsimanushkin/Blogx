@@ -2,6 +2,10 @@ package com.devlab74.blogx.util
 
 import com.devlab74.blogx.util.ErrorHandling.Companion.NETWORK_ERROR
 
+/**
+ * Generic ApiResponseHandler Class
+ */
+
 abstract class ApiResponseHandler<ViewState, Data>(
     private val response: ApiResult<Data?>,
     private val stateEvent: StateEvent

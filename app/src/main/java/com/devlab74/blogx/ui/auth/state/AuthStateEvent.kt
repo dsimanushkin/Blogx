@@ -2,6 +2,10 @@ package com.devlab74.blogx.ui.auth.state
 
 import com.devlab74.blogx.util.StateEvent
 
+/**
+ * This sealed class is holding states when calling API/Cache related to Auth part
+ */
+
 sealed class AuthStateEvent: StateEvent {
 
     data class LoginAttemptEvent(

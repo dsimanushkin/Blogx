@@ -19,6 +19,10 @@ import kotlinx.coroutines.Dispatchers.Main
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * This Fragment contains WebView functionality
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 @AuthScope
@@ -55,12 +59,10 @@ constructor(
         }
 
         override fun onSuccess(email: String) {
-            Timber.d("onSuccess: a reset link will be sent to $email.")
             onPasswordResetLinkSent()
         }
 
         override fun onLoading(isLoading: Boolean) {
-            Timber.d("onLoading...")
             uiCommunicationListener.displayProgressBar(isLoading)
         }
     }

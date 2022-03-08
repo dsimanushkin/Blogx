@@ -8,14 +8,20 @@ import com.devlab74.blogx.util.StateEvent
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * This interface declaring functions that is responsible for API calls of Main -> Account part of the App
+ */
+
 @FlowPreview
 @MainScope
 interface AccountRepository {
+    // Getting Account Properties
     fun getAccountProperties(
         authToken: AuthToken,
         stateEvent: StateEvent
     ): Flow<DataState<AccountViewState>>
 
+    // Saving Account Properties
     fun saveAccountProperties(
         authToken: AuthToken,
         email: String,
@@ -23,6 +29,7 @@ interface AccountRepository {
         stateEvent: StateEvent
     ): Flow<DataState<AccountViewState>>
 
+    // Updating Password
     fun updatePassword(
         authToken: AuthToken,
         currentPassword: String,
@@ -31,5 +38,6 @@ interface AccountRepository {
         stateEvent: StateEvent
     ): Flow<DataState<AccountViewState>>
 
+    // This function is responsible for saving updated account information to Shared Prefs
     fun saveUpdatedUserToPrefs(username: String)
 }

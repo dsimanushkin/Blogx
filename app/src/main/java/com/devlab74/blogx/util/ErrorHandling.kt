@@ -3,6 +3,10 @@ package com.devlab74.blogx.util
 import android.app.Application
 import com.devlab74.blogx.R
 
+/**
+ * This class with static fields is responsible for returning Errors text
+ */
+
 class ErrorHandling {
     companion object {
 

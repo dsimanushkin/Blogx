@@ -39,6 +39,10 @@ import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * BlogFragment Class
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 @MainScope
@@ -166,7 +170,6 @@ constructor(
                 viewModel.setQuery(searchQuery).let {
                     onBlogSearchOrFilter()
                 }
-                Timber.e("SearchView: (keyboard or arrow) executing search... $searchQuery")
             }
             true
         }
@@ -174,7 +177,6 @@ constructor(
         // Case 2: Search button clicked in toolbar
         (searchView.findViewById(R.id.search_go_btn) as View).setOnClickListener {
             val searchQuery = searchPlate.text.toString()
-            Timber.e("SearchView: (button) executing search... $searchQuery")
             onBlogSearchOrFilter()
         }
     }
@@ -253,7 +255,6 @@ constructor(
             }
 
             dialogBinding.positiveButton.setOnClickListener {
-                Timber.d("FilterDialog: apply filter")
 
                 val selectedFilter = if (dialogBinding.filterGroup.checkedRadioButtonId == dialogBinding.filterGroup.filter_author.id) {
                     dialogBinding.filterGroup.filter_author
@@ -269,13 +270,11 @@ constructor(
 
                 var filter = BLOG_FILTER_DATE_UPDATED
                 if (selectedFilter.text.toString() == getString(R.string.filter_author)) {
-                    Timber.d("FilterDialog: changing filter. ${selectedFilter.text}")
                     filter = BLOG_FILTER_USERNAME
                 }
 
                 var order = ""
                 if (selectedOrder.text.toString() == getString(R.string.filter_desc)) {
-                    Timber.d("FilterDialog: changing order. ${selectedOrder.text}")
                     order = "-"
                 }
 
@@ -309,7 +308,6 @@ constructor(
     }
 
     override fun onItemSelected(position: Int, item: BlogPost) {
-        Timber.d("onItemSelected: position, BlogPost: $position, $item")
         viewModel.setBlogPost(item)
         findNavController().navigate(R.id.action_blogFragment_to_viewBlogFragment)
     }

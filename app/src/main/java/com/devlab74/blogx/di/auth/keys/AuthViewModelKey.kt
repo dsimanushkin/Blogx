@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import dagger.MapKey
 import kotlin.reflect.KClass
 
+/**
+ * Annotation class for an Authentication ViewModel key
+ */
+
 @MustBeDocumented
 @Target(
     AnnotationTarget.FUNCTION,

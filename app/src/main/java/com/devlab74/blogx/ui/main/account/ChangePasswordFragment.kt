@@ -18,6 +18,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
+/**
+ * ChangePasswordFragment Class
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 @MainScope
@@ -71,9 +75,7 @@ constructor(
         })
 
         viewModel.stateMessage.observe(viewLifecycleOwner, Observer { stateMessage ->
-
             stateMessage?.let {
-
                 if(stateMessage.response.message == handleErrors(3006, activity?.application!!)){
                     uiCommunicationListener.hideSoftKeyboard()
                     findNavController().popBackStack()

@@ -7,6 +7,10 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * BlogPost data class (SQLite, Room Persistence, Foreign Key, Multiple Database Tables)
+ */
+
 @JsonClass(generateAdapter = true)
 @Entity(
     tableName = "blog_post",

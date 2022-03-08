@@ -5,6 +5,10 @@ import dagger.Subcomponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+/**
+ * This is the Main component interface responsible for injecting into the Main activity
+ */
+
 @FlowPreview
 @MainScope
 @Subcomponent(

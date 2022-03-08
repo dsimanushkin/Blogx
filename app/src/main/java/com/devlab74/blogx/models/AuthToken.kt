@@ -10,6 +10,10 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import kotlinx.android.parcel.Parcelize
 
+/**
+ * AuthToken data class (SQLite, Room Persistence, Foreign Key, Multiple Database Tables)
+ */
+
 const val AUTH_TOKEN_BUNDLE_KEY = "com.devlab74.blogx.models.AuthToken"
 
 @JsonClass(generateAdapter = true)

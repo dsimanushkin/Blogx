@@ -6,6 +6,10 @@ import kotlinx.android.parcel.IgnoredOnParcel
 import timber.log.Timber
 import java.lang.IndexOutOfBoundsException
 
+/**
+ * MessageStack class is responsible for Adding or Removing StateMessages
+ */
+
 class MessageStack: ArrayList<StateMessage>() {
 
     @IgnoredOnParcel

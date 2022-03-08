@@ -21,6 +21,10 @@ import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * AuthActivity Class
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 class AuthActivity : BaseActivity() {
@@ -51,6 +55,7 @@ class AuthActivity : BaseActivity() {
         onRestoreInstanceState()
     }
 
+    // Checking state of Navigation host and if it failed to load creating a new instance
     private fun onRestoreInstanceState() {
         val host = supportFragmentManager.findFragmentById(binding.authFragmentContainer.id)
         host?.let {
@@ -58,6 +63,7 @@ class AuthActivity : BaseActivity() {
         }?: createNavHost()
     }
 
+    // Creating a new instance of a Navigation Host
     private fun createNavHost() {
         val navHost = AuthNavHostFragment.create(
             R.navigation.auth_nav_graph
@@ -81,9 +87,7 @@ class AuthActivity : BaseActivity() {
         })
 
         viewModel.stateMessage.observe(this, Observer { stateMessage ->
-
             stateMessage?.let {
-
                 if(stateMessage.response.message == handleErrors(9008, application)){
                     onFinishCheckPreviousAuthUser()
                 }

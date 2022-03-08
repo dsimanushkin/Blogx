@@ -9,6 +9,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+/**
+ * A generic class that can provide a resource backed by both the sqlite database and the network.
+ */
+
 @FlowPreview
 abstract class NetworkBoundResource<NetworkObj, CacheObj, ViewState>
 constructor(

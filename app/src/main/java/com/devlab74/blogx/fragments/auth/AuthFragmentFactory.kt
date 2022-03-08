@@ -11,6 +11,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
+/**
+ * Fragment factory for Auth part of the app, used for instantiate fragment
+ */
+
 @AuthScope
 class AuthFragmentFactory
 @Inject
@@ -38,6 +42,4 @@ constructor(
                 LauncherFragment(viewModelFactory)
             }
         }
-
-
 }

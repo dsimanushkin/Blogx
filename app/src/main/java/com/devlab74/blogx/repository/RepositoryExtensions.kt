@@ -13,6 +13,7 @@ import kotlinx.coroutines.withTimeout
 import retrofit2.HttpException
 import java.io.IOException
 
+// Suspend Function is responsible for completing an API Call
 suspend fun <T> safeApiCall(
     dispatcher: CoroutineDispatcher,
     apiCall: suspend () -> T?
@@ -52,6 +53,7 @@ suspend fun <T> safeApiCall(
     }
 }
 
+// Suspend Function is responsible for completing a Cache Call
 suspend fun <T> safeCacheCall(
     dispatcher: CoroutineDispatcher,
     cacheCall: suspend () -> T?
@@ -75,7 +77,7 @@ suspend fun <T> safeCacheCall(
     }
 }
 
-
+// Function is responsible for building an error in case if Cache or API Call failed
 fun <ViewState> buildError(
     message: String,
     uiComponentType: UIComponentType,
@@ -91,6 +93,7 @@ fun <ViewState> buildError(
     )
 }
 
+// This function is responsible for converting HTTP error into user friendly message
 private fun convertErrorBody(throwable: HttpException): String? {
     return try {
         throwable.response()?.errorBody()?.string()

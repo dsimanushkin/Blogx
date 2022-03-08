@@ -2,6 +2,10 @@ package com.devlab74.blogx.ui.main.account.state
 
 import com.devlab74.blogx.util.StateEvent
 
+/**
+ * This sealed class is holding states when calling API/Cache related to Main -> Account part
+ */
+
 sealed class AccountStateEvent: StateEvent {
     object GetAccountPropertiesEvent : AccountStateEvent() {
         override fun errorInfo(): String {

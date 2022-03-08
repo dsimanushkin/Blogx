@@ -4,6 +4,10 @@ import androidx.room.*
 import com.devlab74.blogx.models.BlogPost
 import com.devlab74.blogx.util.Constants.Companion.PAGINATION_PAGE_SIZE
 
+/**
+ * DAO interface is responsible for all DB operations related to BlogPost
+ */
+
 @Dao
 interface BlogPostDao {
 

@@ -24,6 +24,10 @@ import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
 
+/**
+ * ViewBlogFragment Class
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 @MainScope

@@ -6,6 +6,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 
+/**
+ * File with functions that are responsible for Pagination and related to BlogViewModel
+ */
+
 @FlowPreview
 @OptIn(ExperimentalCoroutinesApi::class)
 fun BlogViewModel.resetPage() {

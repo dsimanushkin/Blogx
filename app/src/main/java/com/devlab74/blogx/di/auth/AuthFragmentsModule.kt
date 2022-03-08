@@ -6,6 +6,10 @@ import com.devlab74.blogx.fragments.auth.AuthFragmentFactory
 import dagger.Module
 import dagger.Provides
 
+/**
+ * This class is responsible for injecting into Auth Fragments
+ */
+
 @Module
 object AuthFragmentsModule {
     @JvmStatic

@@ -30,6 +30,10 @@ import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
 
+/**
+ * This class is responsible for implementation of functions declared in BlogRepository interface
+ */
+
 @FlowPreview
 @MainScope
 class BlogRepositoryImpl

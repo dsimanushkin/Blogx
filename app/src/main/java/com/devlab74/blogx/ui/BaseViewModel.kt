@@ -12,6 +12,10 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 
+/**
+ * Generic ViewModel class
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 abstract class BaseViewModel<ViewState>: ViewModel() {

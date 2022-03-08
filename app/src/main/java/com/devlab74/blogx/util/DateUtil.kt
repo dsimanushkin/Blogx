@@ -3,6 +3,11 @@ package com.devlab74.blogx.util
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * This class is responsible for converting Server type Date String to Long
+ * And converting Long to String Date Format
+ */
+
 class DateUtils {
     companion object{
         fun convertServerStringDateToLong(sd: String): Long{

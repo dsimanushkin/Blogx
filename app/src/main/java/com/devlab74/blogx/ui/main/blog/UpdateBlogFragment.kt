@@ -30,6 +30,10 @@ import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
+/**
+ * UpdateBlogFragment Class
+ */
+
 @FlowPreview
 @ExperimentalCoroutinesApi
 @MainScope

@@ -4,6 +4,10 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
+/**
+ * This class is responsible for adding space in between RecyclerView elements
+ */
+
 class TopSpacingItemDecoration(
     private val padding: Int
 ): RecyclerView.ItemDecoration() {

@@ -9,8 +9,14 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Header
 import retrofit2.http.POST
 
+/**
+ * This interface holding API methods that is responsible to make calls that are specifically
+ * related to LOGIN part in the app
+ */
+
 @AuthScope
 interface BlogxAuthService {
+    // Login request
     @POST("account/login")
     @FormUrlEncoded
     suspend fun login(
@@ -19,6 +25,7 @@ interface BlogxAuthService {
         @Field("password") password: String
     ): LoginResponse
 
+    // Register request
     @POST("account/register")
     @FormUrlEncoded
     suspend fun register(
