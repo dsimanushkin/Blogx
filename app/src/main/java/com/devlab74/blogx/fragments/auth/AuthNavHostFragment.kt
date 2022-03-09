@@ -13,8 +13,7 @@ import kotlinx.coroutines.FlowPreview
  */
 
 class AuthNavHostFragment : NavHostFragment() {
-    @ExperimentalCoroutinesApi
-    @FlowPreview
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onAttach(context: Context) {
         childFragmentManager.fragmentFactory = (activity as AuthActivity).fragmentFactory
         super.onAttach(context)

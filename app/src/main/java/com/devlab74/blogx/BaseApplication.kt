@@ -5,6 +5,7 @@ import com.devlab74.blogx.di.AppComponent
 import com.devlab74.blogx.di.DaggerAppComponent
 import com.devlab74.blogx.di.auth.AuthComponent
 import com.devlab74.blogx.di.main.MainComponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 
@@ -14,17 +15,14 @@ import timber.log.Timber
  * Responsible for initializing Dagger components and releasing them
  */
 
+@OptIn(FlowPreview::class)
 class BaseApplication: Application() {
-    @FlowPreview
     lateinit var appComponent: AppComponent
 
-    @FlowPreview
     private var authComponent: AuthComponent? = null
 
-    @FlowPreview
     private var mainComponent: MainComponent? = null
 
-    @FlowPreview
     override fun onCreate() {
         super.onCreate()
         initAppComponent()
@@ -34,14 +32,12 @@ class BaseApplication: Application() {
         }
     }
 
-    @FlowPreview
     fun initAppComponent() {
         appComponent = DaggerAppComponent.builder()
             .application(this)
             .build()
     }
 
-    @FlowPreview
     fun authComponent(): AuthComponent {
         if (authComponent == null) {
             authComponent = appComponent.authComponent().create()
@@ -49,7 +45,6 @@ class BaseApplication: Application() {
         return authComponent as AuthComponent
     }
 
-    @FlowPreview
     fun mainComponent(): MainComponent {
         if (mainComponent == null) {
             mainComponent = appComponent.mainComponent().create()
@@ -57,12 +52,10 @@ class BaseApplication: Application() {
         return mainComponent as MainComponent
     }
 
-    @FlowPreview
     fun releaseAuthComponent() {
         authComponent = null
     }
 
-    @FlowPreview
     fun releaseMainComponent() {
         mainComponent = null
     }

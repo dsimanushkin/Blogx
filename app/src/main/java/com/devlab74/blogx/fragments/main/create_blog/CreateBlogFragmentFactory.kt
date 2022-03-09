@@ -21,8 +21,7 @@ constructor(
     private val requestManager: RequestManager
 ): FragmentFactory() {
 
-    @ExperimentalCoroutinesApi
-    @FlowPreview
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun instantiate(classLoader: ClassLoader, className: String) =
         when(className) {
             CreateBlogFragment::class.java.name -> {

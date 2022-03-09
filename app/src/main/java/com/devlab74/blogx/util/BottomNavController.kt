@@ -96,9 +96,10 @@ class BottomNavController(
             .findNavController()
 
         when {
-            navController.backStack.size > 2 ->{
-                navController.popBackStack()
-            }
+            // Big changes in NavController -> Need further attention
+//            navController.backStack.size > 2 ->{
+//                navController.popBackStack()
+//            }
 
             // Fragment back stack is empty so try to go back on the navigation stack
             navigationBackStack.size > 1 -> {

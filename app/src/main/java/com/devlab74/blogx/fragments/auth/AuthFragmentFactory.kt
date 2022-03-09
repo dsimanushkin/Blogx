@@ -22,8 +22,7 @@ constructor(
     private val viewModelFactory: ViewModelProvider.Factory
 ): FragmentFactory() {
 
-    @ExperimentalCoroutinesApi
-    @FlowPreview
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun instantiate(classLoader: ClassLoader, className: String) =
         when(className) {
             LauncherFragment::class.java.name -> {

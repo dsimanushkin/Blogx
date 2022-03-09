@@ -15,6 +15,7 @@ import com.devlab74.blogx.R
 import com.devlab74.blogx.session.SessionManager
 import com.devlab74.blogx.util.*
 import com.devlab74.blogx.util.Constants.Companion.PERMISSIONS_REQUEST_READ_STORAGE
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
@@ -37,7 +38,7 @@ abstract class BaseActivity : AppCompatActivity(), UICommunicationListener {
 
     abstract fun inject()
 
-    @FlowPreview
+    @OptIn(FlowPreview::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         (application as BaseApplication).appComponent
             .inject(this)

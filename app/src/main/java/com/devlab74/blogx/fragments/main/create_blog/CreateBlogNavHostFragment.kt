@@ -13,8 +13,7 @@ import kotlinx.coroutines.FlowPreview
  */
 
 class CreateBlogNavHostFragment : NavHostFragment() {
-    @ExperimentalCoroutinesApi
-    @FlowPreview
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onAttach(context: Context) {
         childFragmentManager.fragmentFactory = (activity as MainActivity).createBlogFragmentFactory
         super.onAttach(context)
